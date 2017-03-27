@@ -1,0 +1,34 @@
+<!doctype html>
+<title>{% block title %}Welcome{% endblock %} | MemeShit</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<div class="page">
+    <h1>MemeShit</h1>
+  <div class="navigation">
+  {% if g.user %}
+    <a href="{{ url_for('hot') }}">hot</a> |
+    <a href="{{ url_for('trending') }}">trending</a> |
+    <a href="{{ url_for('fresh') }}">fresh</a> |
+    <a href="{{ url_for('recommended') }}">recommended</a> |
+    <a href="{{ url_for('logout') }}">sign out [{{ g.user.username }}]</a> |
+
+  {% else %}
+    <a href="{{ url_for('hot') }}">hot</a> |
+    <a href="{{ url_for('trending') }}">trending</a> |
+    <a href="{{ url_for('fresh') }}">fresh</a> |
+    <a href="{{ url_for('register') }}">sign up</a> |
+    <a href="{{ url_for('login') }}">sign in</a>
+  {% endif %}
+  </div>
+  {% with flashes = get_flashed_messages() %}
+    {% if flashes %}
+      <ul class="flashes">
+      {% for message in flashes %}
+        <li>{{ message }}
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <div class="body">
+  {% block body %}{% endblock %}
+  </div>
+</div>

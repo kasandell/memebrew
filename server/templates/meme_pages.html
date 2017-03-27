@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}{{session.page_title}}{% endblock %}
+{% block body %}
+<h2>{{session.page_title}}</h2>
+  {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li>
+    <img src="{{message.image}}" width = 700px>
+    </li>
+    {%endfor %}
+
+  </ul>
+{% endblock %}
