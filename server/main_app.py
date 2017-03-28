@@ -26,6 +26,7 @@
 
 
 import uuid
+from operator import itemgetter
 import time
 from sqlite3 import dbapi2 as sqlite3
 from hashlib import md5, sha256
@@ -39,6 +40,8 @@ DATABASE = '/Users/kylesandell/Desktop/Developer/MachineLearningMemes/server/dat
 PER_PAGE = 30
 
 lastXImages = 20
+lastXUsers = 20
+topXUsers = 10
 
 
 app = Flask(__name__)
@@ -224,6 +227,12 @@ def like_image(perm_id):
     db.execute('delete from Dislikes(userid, image) VALUES(?,?)', [session['userid'], str(perm_id)])
     val = get_score(str(perm_id))
     db.execute('insert into ImageScores(image, score) VALUES(?,?) on duplicate key update score=VALUES(?)', [str(perm_id), float(val), float(val)])
+    
+    tagsForImage = query_db('select idnumber from imagetags where image=?', [perm_id])
+    #for every tag, say that we like it more
+    for tag in tagsForImage:
+        t = tag['idnumber']
+        db.execute('insert into tagLikes(userid, idnumber, count) VALUES(?,?, 1) on duplicate key update count = count+1', [session['userid'], int(t)])
     db.commit()
     
 
@@ -235,6 +244,13 @@ def dislike_image(perm_id):
     db.execute('delete from Likes(userid, image) VALUES(?,?)', [session['userid'], str(perm_id)])
     val = get_score(str(perm_id))
     db.execute('insert into ImageScores(image, score) VALUES(?,?) on duplicate key update score=VALUES(?)', [str(perm_id), float(val), float(val)])
+    tagsForImage = query_db('select idnumber from imagetags where image=?', [perm_id])
+    #for every tag, say that we dislike it more
+    for tag in tagsForImage:
+        t = tag['idnumber']
+        db.execute('insert into tagDislikes(userid, idnumber, count) VALUES(?,?, -1) on duplicate key update count = count-1', [session['userid'], int(t)]) 
+
+    
     db.commit()
 
 
@@ -266,13 +282,120 @@ def get_score(img):
 
 def recommend():
     #take last x images liked by user, get all likers
-    print 'recommend'
-    print session['userid']
-    print lastXImages
     past_images = query_db('select image from likes where userid=? limit ?', [session['userid'], lastXImages])
-    users = []
+    uSet = set()
+    #get users who've liked similar images
     for img in past_images:
-        print img
+        iName = img['image']
+        unames = query_db('select userid from likes where (image=? and NOT userid=?) limit ? ', [iName, session['userid'], lastXUsers])
+        [uSet.add(f['userid']) for f in unames]
+    unames = [f for f in uSet]
+    print unames
+    weights = {}
+    #get each user's weights towards an image
+    for name in unames:
+            weights[str(name)] = calculate(name)
+    #select the most similar users to us
+    mostPromisingUsers = [str(f[0]) for f in topMostPromising(weights)]
+    imgs = getImagesFromPromising(mostPromisingUsers)
+
+
+
+#given a list of promising users, take images they've liked that we haven't liked or disliked
+def getImagesFromPromising(promising):
+    image = set()
+    for user in promising:
+        imgs = query_db('select image from likes l where userid=? not exists(select 1 from likes i where userid=? and l.image != i.image)', [user, session['userid']])
+        [images.add(f['image']) for f in imgs]
+    #final images
+    images = [f for f in image]
+    #sort images based on their linear distance from the user's tags
+    imgWeights = [(f, calcWeightDiff(image)) for f in images]
+    imgWeights = sorted(imgWeights, key=itemgetter(1))
+    return [f[0] for f in imgWeights]
+
+
+
+def calcWeightDiff(image):
+    weights = getImageWeights(image)
+    userWeights = calculate(session['userid'])
+    diff = float(eDist(weights, userWeights))
+    return diff
+
+
+
+def getImageWeights(image):
+    w = query_db('select idnumber from imagetags where image=?', [image])
+    weights = {}
+    for we in w:
+        weights[w['idnumber']] = 1
+    return weights
+
+
+    
+
+def topMostPromising(weights): #return the x most promising users
+    dists = []
+    userWeights = calcluate(session['userid'])
+    for w in weights:
+        dists.append( (w, eDist(weights[w], userWeights)) )
+    dists = sorted(dists, key=itemgetter(1))
+    return dists[:10]
+
+
+
+#calculate linear distance between two weight sets
+#TODO: make this so that it can deal with tags potentially not being present in a users bias set
+def eDist(w1, w2):
+    #for tags not seen, potentially make their value default to -1 for images
+    count = 0
+    tagsSeen = set()
+    for tag in w1:
+        if tag in w2:
+            count += float(square( (w1[tag] - w2[tag] ) ))
+        else:
+            count += float(square(w1[tag]))
+        tagsSeen.add(tag)
+    for tag in w2:
+        if tag not in tagSeen:
+            if tag in w1:
+                count += float(square(w2[tag] - w1[tag]))
+            else:
+                count += float(square(w2[tag]))
+    return count
+
+def square(val):
+    return float(val*val)
+        
+
+def calculate(name):#calculate weight toward image tags
+    likes = query_db('select idnumber, count from taglikes where userid=?', [str(name)])
+    dislikes = query_db('select idnumber, count from tagdislikes where userid=?', [str(name)])
+    tags = set()
+    for l in likes:
+        tags.add(l['idnumber'])
+    for d in dislikes:
+        tags.add(d['idnumber'])
+
+    tagWeights = {}
+    
+    for tag in tags:
+        totalSeen = 0
+        count = 0
+        for l in likes:
+            if l['idnumber'] == tag:
+                totalSeen = totalSeen + int(l['count'])
+                count = count + int(l['count'])
+        for d in dislikes:
+            if d['idnumber'] == tag:
+                totalSeen = totalSeen + int(l['count'])
+                count = count - int(l['count'])
+        tagWeights[str(tag)] = float(count/totalSeen)
+    return tagWeights
+    
+
+        
+
 
     #also we are going to find the most similar users based simply on their weights
 
