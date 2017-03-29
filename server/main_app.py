@@ -191,14 +191,14 @@ def api_trending():
 @app.route('/recommended', methods = ['GET'])
 def recommended(): 
     session['page_title'] = 'recommended'
-    msg = query_db('select image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    recs = reccomend()
     return jsonify([{'image_url':f['image_url'], 'image':f['image']} for f in msg])
 
 
 @app.route('/api/recommended', methods = ['GET'])
 def api_recommended():
     session['page_title'] = 'recommended'
-    msg = query_db('select image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    recs = reccomend()
     return render_template('meme_pages.html', messages = msg) 
 
 
@@ -298,6 +298,7 @@ def recommend():
     #select the most similar users to us
     mostPromisingUsers = [str(f[0]) for f in topMostPromising(weights)]
     imgs = getImagesFromPromising(mostPromisingUsers)
+    return (imgs[:20] if len(imgs) >20 else imgs)
 
 
 
@@ -397,10 +398,8 @@ def calculate(name):#calculate weight toward image tags
         
 
 
-    #also we are going to find the most similar users based simply on their weights
 
 
-    return 1
 
 
 
