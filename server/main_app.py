@@ -151,7 +151,6 @@ def base_page():
 def hot():
     session['page_title'] = 'hot'
     after = request.args.get('after')
-    recommend()
     if after is None:
         return render_template('meme_pages.html')
 
@@ -191,15 +190,19 @@ def api_trending():
 @app.route('/recommended', methods = ['GET'])
 def recommended(): 
     session['page_title'] = 'recommended'
-    recs = reccomend()
-    return jsonify([{'image_url':f['image_url'], 'image':f['image']} for f in msg])
+    recs = recommend()
+    print recs
+    return 'hi' 
+    #return jsonify([{'image_url':f['image_url'], 'image':f['image']} for f in msg])
 
 
 @app.route('/api/recommended', methods = ['GET'])
 def api_recommended():
     session['page_title'] = 'recommended'
     recs = reccomend()
-    return render_template('meme_pages.html', messages = msg) 
+    print recs
+    return 'hi'
+    #return render_template('meme_pages.html', messages = msg) 
 
 
 
@@ -306,8 +309,8 @@ def recommend():
 def getImagesFromPromising(promising):
     image = set()
     for user in promising:
-        imgs = query_db('select image from likes l where userid=? not exists(select 1 from likes i where userid=? and l.image != i.image)', [user, session['userid']])
-        [images.add(f['image']) for f in imgs]
+        imgs = query_db('select image from likes l where userid=? and not exists(select 1 from likes i where userid=? and l.image != i.image)', [user, session['userid']])
+        [image.add(f['image']) for f in imgs]
     #final images
     images = [f for f in image]
     #sort images based on their linear distance from the user's tags
@@ -326,7 +329,7 @@ def calcWeightDiff(image):
 
 
 def getImageWeights(image):
-    w = query_db('select idnumber from imagetags where image=?', [image])
+    w = query_db('select idnumber from imagetags where image=?', [str(image)])
     weights = {}
     for we in w:
         weights[w['idnumber']] = 1
@@ -337,7 +340,7 @@ def getImageWeights(image):
 
 def topMostPromising(weights): #return the x most promising users
     dists = []
-    userWeights = calcluate(session['userid'])
+    userWeights = calculate(session['userid'])
     for w in weights:
         dists.append( (w, eDist(weights[w], userWeights)) )
     dists = sorted(dists, key=itemgetter(1))
