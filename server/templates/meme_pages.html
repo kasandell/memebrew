@@ -6,7 +6,8 @@
   <ul class="messages">
     {% for message in messages %}
     <li>
-    <img src="{{message.image}}" width = 700px>
+    <img src="{{message.image_url}}" width = 700px>
+    <h1>{{message.image}}</h2>
     </li>
     {%endfor %}
 
