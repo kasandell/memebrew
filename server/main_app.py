@@ -26,6 +26,7 @@
 
 
 import uuid
+from werkzeug.utils import secure_filename
 from operator import itemgetter
 import time
 from sqlite3 import dbapi2 as sqlite3
@@ -38,6 +39,9 @@ epoch = datetime(1970, 1, 1)
 
 DATABASE = '/Users/kylesandell/Desktop/Developer/MachineLearningMemes/server/database/meme.db'
 PER_PAGE = 30
+UPLOADS_FOLDER = '/Users/kylesandell/Desktop/Developer/MachineLearningMemes/server/storage/'
+ALLOWED_EXTENSIONS = ['gif', 'png', 'jpeg', 'jpg']
+
 
 lastXImages = 20
 lastXUsers = 20
@@ -47,6 +51,7 @@ topXUsers = 10
 app = Flask(__name__)
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+app.config['UPLOADS_FOLDER'] = UPLOADS_FOLDER
 
 #return the database
 def get_db():
@@ -63,6 +68,8 @@ def query_db(query, args=(), one=False):
     rv = cur.fetchall()
     return (rv[0] if rv else None) if one else rv
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 #set up everything that needs to happen before a request is made
@@ -267,11 +274,34 @@ def dislike_image(perm_id):
     db.commit()
 
 
-@app.route('/upload')
+def getImageType(imgName):
+    if imgName[-4:] == '.jpg' or imgName[-4:] == '.png' or imgName[-4:] == '.gif':
+        return imgName[-4:]
+    if imgName[-5:] == '.jpeg':
+        return imgName[-5:]
+
+
 #TODO: make this
 #upload images
+@app.route('/upload', methods = ['GET', 'POST'])
 def upload():
-    return redirect(url_for('hot'))
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(url_for(upload))
+        fl = request.files['file']
+        if fl.filename == '':
+            flash('No selected file')
+            return redirect(url_for(upload))
+        if fl and allowed_file(fl.filename):
+            hash = uuid.uuid()
+            #TODO: insert hash into images database
+            #TODO: tag image 
+            fname = hash + getImageType(fl.filename)
+            fl.save(os.path.join(app.config['UPLOAD_FOLDER'], fname))
+            return redirect(url_for(fresh))
+
+    return render_template('upload.html')
 
 
 #return seconds since epoch
