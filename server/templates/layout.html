@@ -1,6 +1,7 @@
 <!doctype html>
 <title>{% block title %}Welcome{% endblock %} | MemeShit</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}”>
+
 <div class="page">
     <h1>MemeShit</h1>
   <div class="navigation">
@@ -9,6 +10,7 @@
     <a href="{{ url_for('trending') }}">trending</a> |
     <a href="{{ url_for('fresh') }}">fresh</a> |
     <a href="{{ url_for('recommended') }}">recommended</a> |
+    <a href="{{ url_for('upload') }}">upload</a> |
     <a href="{{ url_for('logout') }}">sign out [{{ g.user.username }}]</a> |
 
   {% else %}

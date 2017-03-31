@@ -26,6 +26,7 @@
 
 
 import uuid
+import os
 from werkzeug.utils import secure_filename
 from operator import itemgetter
 import time
@@ -33,7 +34,7 @@ from sqlite3 import dbapi2 as sqlite3
 from hashlib import md5, sha256
 from datetime import datetime
 from math import log
-from flask import Flask, request, session, url_for, redirect, render_template, abort, g, flash, _app_ctx_stack, jsonify
+from flask import Flask, request, session, url_for, redirect, render_template, abort, g, flash, _app_ctx_stack, jsonify, send_file
 
 epoch = datetime(1970, 1, 1)
 
@@ -41,6 +42,8 @@ DATABASE = '/Users/kylesandell/Desktop/Developer/MachineLearningMemes/server/dat
 PER_PAGE = 30
 UPLOADS_FOLDER = '/Users/kylesandell/Desktop/Developer/MachineLearningMemes/server/storage/'
 ALLOWED_EXTENSIONS = ['gif', 'png', 'jpeg', 'jpg']
+
+baseImageDir = 'http://127.0.0.1:5000/img'
 
 
 lastXImages = 20
@@ -92,7 +95,7 @@ def login():
         if user is None:
             error = 'Invalid username'
         elif str(sha256(request.form['password']).hexdigest()) != str(user['passhash']):#TODO chnage this to be hash of password
-            print str(sha256(request.form['password']).hexdigest()), user['passhash']
+            #print str(sha256(request.form['password']).hexdigest()), user['passhash']
             error = 'Invalid password'
         else:
             flash('You were logged in')
@@ -136,9 +139,9 @@ def register():
             error = 'That username is already taken'
         else:
             v = str(uuid.uuid1())
-            print v
-            print str(request.form['username'])
-            print str(sha256(str(request.form['password'])).hexdigest())
+            #print v
+            #print str(request.form['username'])
+            #print str(sha256(str(request.form['password'])).hexdigest())
             db = get_db()
             db.execute('insert into Users(userid, username, passhash) VALUES(?,?,?)', [v ,str(request.form['username']), str(sha256(request.form['password']).hexdigest())])
             db.commit()
@@ -159,19 +162,21 @@ def base_page():
 @app.route('/hot', methods = ['GET'])
 def hot():
     session['page_title'] = 'hot'
-    after = request.args.get('after')
-    if after is None:
-        return render_template('meme_pages.html')
+    #after = request.args.get('after')
+    #if after is None:
+    #    return render_template('meme_pages.html')
 
     #load the most popular current images
+    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    return render_template('meme_pages.html', messages = msg) 
 
 
 #api endpoint for hot, used by app
 @app.route('/api/hot', methods = ['GET'])
 def api_hot():
     session['page_title'] = 'hot'
-    msg = query_db('select image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
-    return render_template('meme_pages.html', messages = msg) 
+    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    return jsonify([{'image_url':f['image_url'], 'caption':f['caption'], 'score': get_score(f['image'])} for f in msg])
 
 
 
@@ -180,8 +185,7 @@ def api_hot():
 @app.route('/trending', methods = ['GET'])
 def trending():
     session['page_title'] = 'trending'
-    msg = query_db('select image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
-    print msg
+    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
     return render_template('meme_pages.html', messages = msg) 
 
 
@@ -192,8 +196,8 @@ def trending():
 @app.route('/api/trending', methods = ['GET'])
 def api_trending():
     session['page_title'] = 'trending'
-    msg = query_db('select image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
-    return jsonify([{'image_url':f['image_url'], 'image':f['image'], 'score': get_score(f['image'])} for f in msg])
+    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    return jsonify([{'image_url':f['image_url'], 'caption':f['caption'], 'score': get_score(f['image'])} for f in msg])
 
 
 
@@ -203,7 +207,7 @@ def api_trending():
 def recommended(): 
     session['page_title'] = 'recommended'
     recs = recommend()
-    print recs
+    #print recs
     return 'hi' 
     #return jsonify([{'image_url':f['image_url'], 'image':f['image']} for f in msg])
 
@@ -213,7 +217,7 @@ def recommended():
 def api_recommended():
     session['page_title'] = 'recommended'
     recs = reccomend()
-    print recs
+    #print recs
     return 'hi'
     #return render_template('meme_pages.html', messages = msg) 
 
@@ -224,7 +228,9 @@ def api_recommended():
 @app.route('/fresh', methods = ['GET'])
 def fresh():
     session['page_title'] = 'fresh'
-    msg = query_db('select image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    for m in msg:
+        print str(m['image_url'])
     return render_template('meme_pages.html', messages = msg) 
 
 
@@ -233,8 +239,8 @@ def fresh():
 @app.route('/api/fresh', methods = ['GET'])
 def api_fresh():
     session['page_title'] = 'fresh'
-    msg = query_db('select image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
-    return jsonify([{'image_url':f['image_url'], 'image':f['image']} for f in msg])
+    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    return jsonify([{'image_url':f['image_url'], 'caption':f['caption']} for f in msg])
 
 
 
@@ -275,11 +281,31 @@ def dislike_image(perm_id):
 
 
 def getImageType(imgName):
-    if imgName[-4:] == '.jpg' or imgName[-4:] == '.png' or imgName[-4:] == '.gif':
-        return imgName[-4:]
-    if imgName[-5:] == '.jpeg':
-        return imgName[-5:]
+    if imgName[-4:].lower() == '.jpg' or imgName[-4:].lower() == '.png' or imgName[-4:].lower() == '.gif':
+        return imgName[-4:].lower()
+    if imgName[-5:].lower() == '.jpeg':
+        return imgName[-5:].lower()
 
+
+
+def addToDatabase(imgName, tags, link, caption):
+    db = get_db()
+    db.execute('insert into uploads(image,image_url, caption) VALUES(?,?,?)', [imgName, link, caption])
+    
+    for tag in tags:
+        db.execute('insert into tagmaps(tagname) SELECT ? where not exists(select 1 from tagmaps where tagname=?)', [tag, tag])
+        val = query_db('select idnumber from tagmaps where tagname=?', [tag], one=True)['idnumber']
+        #print val
+        db.execute('insert into imagetags(image,idnumber) VALUES(?,?)', [imgName, int(val)])
+    db.commit()
+
+
+
+def getTags(tagStr):
+    tgArr = tagStr.split(',')
+    tgArr = [f.strip() for f in tgArr]
+    tgArr = [str(f).lower() for f in tgArr if (f is not '' and f is not None)]
+    return tgArr
 
 #TODO: make this
 #upload images
@@ -288,21 +314,46 @@ def upload():
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
-            return redirect(url_for(upload))
+            return redirect(url_for('upload'))
         fl = request.files['file']
         if fl.filename == '':
             flash('No selected file')
             return redirect(url_for(upload))
         if fl and allowed_file(fl.filename):
-            hash = uuid.uuid()
+            hash = str(uuid.uuid1())
+            #TODO: finish full upload stuffs
             #TODO: insert hash into images database
             #TODO: tag image 
             fname = hash + getImageType(fl.filename)
-            fl.save(os.path.join(app.config['UPLOAD_FOLDER'], fname))
-            return redirect(url_for(fresh))
+            link = baseImageDir + '/' + fname
+            tags = getTags(request.form['tags'])
+            addToDatabase(hash, tags, link, str(request.form['caption']))
+
+
+            fl.save(os.path.join(app.config['UPLOADS_FOLDER'], fname))
+            return redirect(url_for('fresh'))
 
     return render_template('upload.html')
 
+
+
+@app.route('/img/<perm_id>', methods = ['GET'])
+def retImg(perm_id):
+    #TODO: make some way to make sure they can only access what's in uploads directory
+    if os.path.exists(app.config['UPLOADS_FOLDER'] + '/' + perm_id):
+        type = getImageType(perm_id)
+        mt = None
+        if type == '.jpeg' or type == '.jpg':
+            mt = 'image/jpeg'
+        elif type == '.png':
+            mt = 'image/png'
+        else:
+            mt = 'image/gif'
+        return send_file( (app.config['UPLOADS_FOLDER'] + '/' + perm_id), mimetype=mt)
+
+    return send_file( (app.config['UPLOADS_FOLDER'] + '/fnf.jpg'), mimetype='image/jpeg')
+
+    
 
 #return seconds since epoch
 def secs_since_epoch(date):
@@ -339,7 +390,7 @@ def recommend():
         unames = query_db('select userid from likes where (image=? and NOT userid=?) limit ? ', [iName, session['userid'], lastXUsers])
         [uSet.add(f['userid']) for f in unames]
     unames = [f for f in uSet]
-    print unames
+    #print unames
     weights = {}
     #get each user's weights towards an image
     for name in unames:

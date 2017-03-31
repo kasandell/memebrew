@@ -4,7 +4,10 @@
 <title>Upload new File</title>
 <h1>Upload new File</h1>
 <form method=post enctype=multipart/form-data>
-    <p><input type=file name=file>
+    Title: <input type="text" name="caption" placeholder="Caption your image"><br>
+    <p><input type=file name=file><br>
+    Tags: <input type="text" name="tags" placeholder="Tag your image"><br>
+
     <input type=submit value=Upload>
 </form>
 {% endblock %}
