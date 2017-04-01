@@ -244,41 +244,108 @@ def api_fresh():
 
 
 
+
+
+'''
+summary: if we've already liked image, ignore the rest of the method
+if not, say that we like it
+if we've disliked it, remove from dislikes
+update the score
+for every tag
+if we've never seen the tag, give it a starting score
+else, update the score
+if we've liked/disliked the image before, update the opposite table to represent the loss of 1 for that tag
+'''
+#TODO: fix db state to work without update on duplicate since we insert it on upload
 @app.route('/<perm_id>/like', methods = ['POST'])
 #user like image, update score and database entries
 def like_image(perm_id):
+    print 'like'
+    print perm_id
     db = get_db()
-    db.execute('insert into Likes(userid, image) VALUES(?,?) WHERE not exists (select 1 from Likes where userid=? and image=?)', [session['userid'], str(perm_id), session['userid'], str(perm_id)])
-    db.execute('delete from Dislikes(userid, image) VALUES(?,?)', [session['userid'], str(perm_id)])
+    alreadyLiked = query_db('select 1 from likes where userid=? and image=?', [session['userid'], str(perm_id)])
+    if alreadyLiked:
+        print 'already liked'
+        return jsonify({'success': False, 'reason':'Already liked image'})
+    db.execute('insert into likes(userid, image) select ?,?', [session['userid'], str(perm_id)])
+    seen = False
+    previouslySeen = query_db('select 1 from dislikes where userid=? and image=?', [session['userid'], str(perm_id)])
+    if previouslySeen:
+        seen = True
+        print 'we\'ve disliked this before'
+    db.execute('delete from dislikes where userid=? and image=?', [session['userid'], str(perm_id)])
     val = get_score(str(perm_id))
-    db.execute('insert into ImageScores(image, score) VALUES(?,?) on duplicate key update score=VALUES(?)', [str(perm_id), float(val), float(val)])
+    scoreExists = db.execute('select 1 from imagescores where image=?', [str(perm_id)])
+    if scoreExists:
+        db.execute('update imagescores set score=? where image=?', [float(val), str(perm_id)])
+    else:
+        db.execute('insert into imagescore(image, score) select ?,?', [str(perm_id), float(val)])
     
     tagsForImage = query_db('select idnumber from imagetags where image=?', [perm_id])
     #for every tag, say that we like it more
     for tag in tagsForImage:
         t = tag['idnumber']
-        db.execute('insert into tagLikes(userid, idnumber, count) VALUES(?,?, 1) on duplicate key update count = count+1', [session['userid'], int(t)])
+        exists = query_db('select 1 from taglikes where userid=? and idnumber=?', [session['userid'], int(t)])
+        if exists:
+            #say we like it, and if we've already liked this image, remove 1 from the dislikes
+            db.execute('update taglikes set count=count+1 where userid=? and idnumber=?', [session['userid'], int(t)])
+            if seen:
+                print 'saw it already'
+                db.execute('update tagdislikes set count=count-1 where userid=? and idnumber=?', [session['userid'], int(t)])
+        else:
+            db.execute('insert into taglikes(userid, idnumber, count) select ?,?,?', [session['userid'], int(t), 1])
+            if seen:
+                print 'saw it already'
+                db.execute('update tagdislikes set count=count-1 where userid=? and idnumber=?', [session['userid'], int(t)])
+
+        #jdb.execute('insert into tagLikes(userid, idnumber, count) SELECT ?,?, 1 on duplicate key update count = count+1', [session['userid'], int(t)])
     db.commit()
+    return jsonify({'success':True})
     
 
 
 @app.route('/<perm_id>/dislike', methods = ['POST'])
 #user dislike an image, update image score, and database entries
 def dislike_image(perm_id):
+    print 'dislike'
     db = get_db()
-    db.execute('insert into Dislikes(userid, image) VALUES(?,?) WHERE not exists (select 1 from Dislikes where userid=? and image=?)', [session['userid'], str(perm_id), session['userid'], str(perm_id)])
-    db.execute('delete from Likes(userid, image) VALUES(?,?)', [session['userid'], str(perm_id)])
+    alreadyLiked = query_db('select 1 from dislikes where userid=? and image=?', [session['userid'], str(perm_id)])
+    if alreadyLiked:
+        print 'already disliked'
+        return jsonify({'success': False, 'reason':'Already disliked image'})
+    db.execute('insert into dislikes(userid, image) select ?,?', [session['userid'], str(perm_id)])
+    previouslySeen = query_db('select 1 from likes where userid=? and image=?', [session['userid'], str(perm_id)])
+    seen = False
+    if previouslySeen:
+        seen = True
+        print 'we\'ve liked this before'
+    db.execute('delete from likes where userid=? and image=?', [session['userid'], str(perm_id)])
     val = get_score(str(perm_id))
-    db.execute('insert into ImageScores(image, score) VALUES(?,?) on duplicate key update score=VALUES(?)', [str(perm_id), float(val), float(val)])
+    scoreExists = db.execute('select 1 from imagescores where image=?', [str(perm_id)])
+    if scoreExists:
+        db.execute('update imagescores set score=? where image=?', [float(val), str(perm_id)])
+    else:
+        db.execute('insert into imagescore(image, score) select ?,?', [str(perm_id), float(val)])
+    
     tagsForImage = query_db('select idnumber from imagetags where image=?', [perm_id])
-    #for every tag, say that we dislike it more
+    #for every tag, say that we like it more
     for tag in tagsForImage:
         t = tag['idnumber']
-        db.execute('insert into tagDislikes(userid, idnumber, count) VALUES(?,?, -1) on duplicate key update count = count-1', [session['userid'], int(t)]) 
+        exists = query_db('select 1 from tagdislikes where userid=? and idnumber=?', [session['userid'], int(t)])
+        if exists:
+            db.execute('update tagdislikes set count=count+1 where userid=? and idnumber=?', [session['userid'], int(t)])
+            if seen:
+                print 'saw it already'
+                db.execute('update taglikes set count=count-1 where userid=? and idnumber=?', [session['userid'], int(t)])
+        else:
+            db.execute('insert into tagdislikes(userid, idnumber, count) select ?,?,?', [session['userid'], int(t), 1])
+            if seen:
+                print 'saw it already'
+                db.execute('update taglikes set count=count-1 where userid=? and idnumber=?', [session['userid'], int(t)])
 
-    
+        #jdb.execute('insert into tagLikes(userid, idnumber, count) SELECT ?,?, 1 on duplicate key update count = count+1', [session['userid'], int(t)])
     db.commit()
-
+    return jsonify({'success':True})
 
 def getImageType(imgName):
     if imgName[-4:].lower() == '.jpg' or imgName[-4:].lower() == '.png' or imgName[-4:].lower() == '.gif':
@@ -297,6 +364,9 @@ def addToDatabase(imgName, tags, link, caption):
         val = query_db('select idnumber from tagmaps where tagname=?', [tag], one=True)['idnumber']
         #print val
         db.execute('insert into imagetags(image,idnumber) VALUES(?,?)', [imgName, int(val)])
+
+    v = get_score(str(imgName))#XXX
+    db.execute('insert into imagescores(image, score) select ?,?', [imgName, v])
     db.commit()
 
 
@@ -318,7 +388,7 @@ def upload():
         fl = request.files['file']
         if fl.filename == '':
             flash('No selected file')
-            return redirect(url_for(upload))
+            return redirect(url_for('upload'))
         if fl and allowed_file(fl.filename):
             hash = str(uuid.uuid1())
             #TODO: finish full upload stuffs
@@ -357,12 +427,12 @@ def retImg(perm_id):
 
 #return seconds since epoch
 def secs_since_epoch(date):
-    timeDelt = date-epoch
-    return (td.days*86400) + td.seconds + (float(td.microseconds)/1000000)
+    timeDelt = datetime.fromtimestamp(date)-epoch
+    return (timeDelt.days*86400) + timeDelt.seconds + (float(timeDelt.microseconds)/1000000)
 
 #calculate the difference between upvotes and downvotes
 def score(upvotes, downvotes):
-    return ups-downs
+    return upvotes-downvotes
 
 #calculate an image score, used for selecting into hot/trending
 def get_score(img):
@@ -374,8 +444,8 @@ def get_score(img):
     order = log(max(abs(s), 1), 10)
     sign = 1 if s > 0 else -1 if s < 0 else 0
     postDate_q = query_db('select strftime("%s", uploadtime) from uploads where image=?', [img], one=True)
-    postDate = postaDate_q
-    seconds = secs_since_epoch(date) - 1490215831 #yup just deal with my random timestamp sma
+    postDate = int(postDate_q[0])
+    seconds = secs_since_epoch(postDate) - 1490215831 #yup just deal with my random timestamp sma
     return round(sign * order + seconds / 45000, 7)
 
 

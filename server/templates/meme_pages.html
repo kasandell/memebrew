@@ -1,6 +1,22 @@
 {% extends "layout.html" %}
 {% block title %}{{session.page_title}}{% endblock %}
 {% block body %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        function likePost(image)
+        {
+            console.log(image);
+            console.log('hi');
+            url = image + "/like";
+            $.post(url);
+        }
+        function dislikePost(image)
+        {
+            console.log('hi');
+            url = image + "/dislike";
+            $.post(url);
+        }
+    </script>
 <h2>{{session.page_title}}</h2>
   {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
   <ul class="messages">
@@ -9,6 +25,7 @@
     <div>
     <h1>{{message.caption}}</h1>
     <img src="{{message.image_url}}">
+    <button class="LikeButton" onclick="likePost('{{message.image}}')">Like</Button><button class="DislikeButton" onclick="dislikePost('{{message.image}}')">Dislike</button>
     </div>
     {%endfor %}
 
