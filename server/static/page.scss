@@ -1,10 +1,9 @@
 @import 'variables.scss';
 
 body {
-    background: #CAECE9;
+    background: $void;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
-    border: 1px solid $green;
     width: 700px;
     margin: 30px auto;
 }
@@ -42,13 +41,16 @@ input[type="submit"] {
 }
 
 h1 {
-    background: $green;
+    background: $jewel;
     margin: 0;
     padding: 10px 14px;
     color: white;
     letter-spacing: 1px;
-    text-shadow: 0 0 3px $dark-green;
     font-weight: normal;
+}
+h2 {
+    color: white;
+
 }
 
 
@@ -68,8 +70,7 @@ h1 {
     margin: 10px 10px 0 10px;
     padding: 0;
     li {
-        background: #B9F3ED;
-        border: 1px solid #81CEC6;
+        background: $jewel;
         -moz-border-radius: 2px;
         -webkit-border-radius: 2px;
         padding: 4px;

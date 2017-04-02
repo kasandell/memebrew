@@ -1,8 +1,7 @@
 body {
-  background: #CAECE9;
+  background: #0E0B16;
   font-family: 'Trebuchet MS', sans-serif;
   font-size: 14px;
-  border: 1px solid #6ECCC4;
   width: 700px;
   margin: 30px auto; }
 
@@ -34,13 +33,15 @@ input[type="submit"] {
   color: white; }
 
 h1 {
-  background: #6ECCC4;
+  background: #4717F6;
   margin: 0;
   padding: 10px 14px;
   color: white;
   letter-spacing: 1px;
-  text-shadow: 0 0 3px #24776F;
   font-weight: normal; }
+
+h2 {
+  color: white; }
 
 .body {
   padding: 10px; }
@@ -56,8 +57,7 @@ h1 {
   margin: 10px 10px 0 10px;
   padding: 0; }
   .flashes li {
-    background: #B9F3ED;
-    border: 1px solid #81CEC6;
+    background: #4717F6;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     padding: 4px;

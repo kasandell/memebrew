@@ -3,7 +3,7 @@
 .btn {
     /* reset default styles */
     color: white;
-    background-color: $dark-green;
+    background-color: $fuschia;
     border: 0px;
     border-radius: 5px;
     padding: 0.5em 0.75em 0.5em 0.75em;
@@ -16,7 +16,7 @@
     position: relative;
     top: -2px;
     left: -2px;
-    box-shadow: 2px 2px 0px 0 $green;
+    box-shadow: 2px 2px 0px 0 $jewel;
     &:active {
         box-shadow: none;
         top: 0px;

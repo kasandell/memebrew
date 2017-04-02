@@ -1,7 +1,7 @@
 .btn {
   /* reset default styles */
   color: white;
-  background-color: #24776F;
+  background-color: #A239CA;
   border: 0px;
   border-radius: 5px;
   padding: 0.5em 0.75em 0.5em 0.75em;
@@ -10,7 +10,7 @@
   position: relative;
   top: -2px;
   left: -2px;
-  box-shadow: 2px 2px 0px 0 #6ECCC4; }
+  box-shadow: 2px 2px 0px 0 #4717F6; }
   .btn:hover {
     cursor: pointer; }
   .btn:active {
