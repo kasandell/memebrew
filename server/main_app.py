@@ -51,6 +51,14 @@ lastXUsers = 20
 topXUsers = 10
 
 
+
+freshFloor = 0
+freshCeil = 10
+trendingFloor = freshCeil
+trendingCeil = 18
+hotFloor = trendingCeil
+
+
 app = Flask(__name__)
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
@@ -167,7 +175,9 @@ def hot():
     #    return render_template('meme_pages.html')
 
     #load the most popular current images
-    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    #msg = query_db('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ?) order by uploadtime desc', [hotFloor])
+    msg = query_db('select caption, image, image_url from Uploads ul order by (select score from imagescores where image=ul.image) desc')
+    print msg
     return render_template('meme_pages.html', messages = msg) 
 
 
@@ -175,17 +185,19 @@ def hot():
 @app.route('/api/hot', methods = ['GET'])
 def api_hot():
     session['page_title'] = 'hot'
-    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    #msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    msg = query_db('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ?) order by uploadtime desc', [hotFloor])
     return jsonify([{'image_url':f['image_url'], 'caption':f['caption'], 'score': get_score(f['image'])} for f in msg])
 
 
 
 #trending page
-#accepts optional username, which filters what images the user sees, if they've already liked or disliked them 
+#TODO: rewrite to be images with most upvotes/time frame 
+#TODO: consider something like a controversial page
 @app.route('/trending', methods = ['GET'])
 def trending():
     session['page_title'] = 'trending'
-    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    msg = query_db('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [trendingFloor, trendingCeil])
     return render_template('meme_pages.html', messages = msg) 
 
 
@@ -196,7 +208,7 @@ def trending():
 @app.route('/api/trending', methods = ['GET'])
 def api_trending():
     session['page_title'] = 'trending'
-    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    msg = query_db('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [trendingFloor, trendingCeil])
     return jsonify([{'image_url':f['image_url'], 'caption':f['caption'], 'score': get_score(f['image'])} for f in msg])
 
 
@@ -207,8 +219,8 @@ def api_trending():
 def recommended(): 
     session['page_title'] = 'recommended'
     recs = recommend()
-    #print recs
-    return 'hi' 
+    print recs
+    return render_template('meme_pages.html', messages = recs)
     #return jsonify([{'image_url':f['image_url'], 'image':f['image']} for f in msg])
 
 
@@ -217,9 +229,7 @@ def recommended():
 def api_recommended():
     session['page_title'] = 'recommended'
     recs = reccomend()
-    #print recs
-    return 'hi'
-    #return render_template('meme_pages.html', messages = msg) 
+    return render_template('meme_pages.html', messages = recs)
 
 
 
@@ -228,7 +238,7 @@ def api_recommended():
 @app.route('/fresh', methods = ['GET'])
 def fresh():
     session['page_title'] = 'fresh'
-    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    msg = query_db('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [freshFloor, freshCeil])
     for m in msg:
         print str(m['image_url'])
     return render_template('meme_pages.html', messages = msg) 
@@ -239,7 +249,7 @@ def fresh():
 @app.route('/api/fresh', methods = ['GET'])
 def api_fresh():
     session['page_title'] = 'fresh'
-    msg = query_db('select caption, image, image_url from Uploads order by uploadtime desc')#query_db('select uploads.image from Uploads order by uploads.uploadtime desc limit ?' [PER_PAGE])
+    msg = query_db('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [freshFloor, freshCeil])
     return jsonify([{'image_url':f['image_url'], 'caption':f['caption']} for f in msg])
 
 
@@ -275,11 +285,13 @@ def like_image(perm_id):
         print 'we\'ve disliked this before'
     db.execute('delete from dislikes where userid=? and image=?', [session['userid'], str(perm_id)])
     val = get_score(str(perm_id))
+    print val
     scoreExists = db.execute('select 1 from imagescores where image=?', [str(perm_id)])
+    print 'sore exists'
     if scoreExists:
         db.execute('update imagescores set score=? where image=?', [float(val), str(perm_id)])
     else:
-        db.execute('insert into imagescore(image, score) select ?,?', [str(perm_id), float(val)])
+        db.execute('insert into imagescores(image, score) select ?,?', [str(perm_id), float(val)])
     
     tagsForImage = query_db('select idnumber from imagetags where image=?', [perm_id])
     #for every tag, say that we like it more
@@ -321,11 +333,13 @@ def dislike_image(perm_id):
         print 'we\'ve liked this before'
     db.execute('delete from likes where userid=? and image=?', [session['userid'], str(perm_id)])
     val = get_score(str(perm_id))
+    print val
     scoreExists = db.execute('select 1 from imagescores where image=?', [str(perm_id)])
+    print 'score exists'
     if scoreExists:
         db.execute('update imagescores set score=? where image=?', [float(val), str(perm_id)])
     else:
-        db.execute('insert into imagescore(image, score) select ?,?', [str(perm_id), float(val)])
+        db.execute('insert into imagescores(image, score) select ?,?', [str(perm_id), float(val)])
     
     tagsForImage = query_db('select idnumber from imagetags where image=?', [perm_id])
     #for every tag, say that we like it more
@@ -366,6 +380,7 @@ def addToDatabase(imgName, tags, link, caption):
         db.execute('insert into imagetags(image,idnumber) VALUES(?,?)', [imgName, int(val)])
 
     v = get_score(str(imgName))#XXX
+    print v
     db.execute('insert into imagescores(image, score) select ?,?', [imgName, v])
     db.commit()
 
@@ -436,10 +451,20 @@ def score(upvotes, downvotes):
 
 #calculate an image score, used for selecting into hot/trending
 def get_score(img):
+    print 'image:', img
     ups_q = query_db('select * from likes where image=?', [img])
-    ups = len(ups_q)
+    ups=0
+    for up in ups_q:
+        ups = ups+1
+        print up['userid']
+    print 'ups: ', ups
     downs_q = query_db('select * from dislikes where image=?', [img])
-    downs = len(ups_q)
+    downs = 0
+    for down in downs_q:
+        downs = downs + 1
+        print down['userid']
+    print 'downs: ' , downs
+    print ups, downs
     s = score(ups, downs)
     order = log(max(abs(s), 1), 10)
     sign = 1 if s > 0 else -1 if s < 0 else 0
@@ -460,15 +485,21 @@ def recommend():
         unames = query_db('select userid from likes where (image=? and NOT userid=?) limit ? ', [iName, session['userid'], lastXUsers])
         [uSet.add(f['userid']) for f in unames]
     unames = [f for f in uSet]
-    #print unames
+    print 'usernames: ', unames
     weights = {}
     #get each user's weights towards an image
     for name in unames:
             weights[str(name)] = calculate(name)
+    print 'weights', weights
     #select the most similar users to us
     mostPromisingUsers = [str(f[0]) for f in topMostPromising(weights)]
+    print 'promising users:', mostPromisingUsers
     imgs = getImagesFromPromising(mostPromisingUsers)
-    return (imgs[:20] if len(imgs) >20 else imgs)
+    msgs = []
+    for img in imgs:
+        q = query_db('select caption, image, image_url from Uploads where image=?', [img], one=True) 
+        msgs.append(q)
+    return (msgs[:20] if len(msgs) >20 else msgs)
 
 
 
@@ -476,11 +507,26 @@ def recommend():
 #select the most likely images from the most promising users by using the euclidean distance between a user's preferences and an image weight
 def getImagesFromPromising(promising):
     image = set()
+    userLikes = query_db('select image from  likes where userid=?', [session['userid']])
+    userSet = set()
+    [userSet.add(f['image']) for f in userLikes]
+    print userSet
+
     for user in promising:
-        imgs = query_db('select image from likes l where userid=? and not exists(select 1 from likes i where userid=? and l.image != i.image)', [user, session['userid']])
-        [image.add(f['image']) for f in imgs]
-    #final images
+        #imgs = query_db('select image from likes l where userid=? and not exists(select 1 from likes i where userid=? and l.image != i.image)', [user, session['userid']])
+
+        otherLikes = query_db('select image from  likes where userid=?', [user])
+        oLikes = [f['image'] for f in otherLikes]
+        print 'other user likes: ', oLikes
+        difLikes = [x for x in oLikes if x not in userSet]
+        print difLikes
+        [image.add(f) for f in difLikes]
+
+
+
     images = [f for f in image]
+    print 'imgs: ', images
+    #HERE
     #sort images based on their linear distance from the user's tags
     imgWeights = [(f, calcWeightDiff(image)) for f in images]
     imgWeights = sorted(imgWeights, key=itemgetter(1))
@@ -506,15 +552,18 @@ def getImageWeights(image):
     return weights
 
 
-    
+
 
 #return the top most promising users, number defined by constant topXUsers
 def topMostPromising(weights): #return the x most promising users
     dists = []
     userWeights = calculate(session['userid'])
+    print 'userWeights: ', userWeights
     for w in weights:
         dists.append( (w, eDist(weights[w], userWeights)) )
+    print 'dists: ', dists
     dists = sorted(dists, key=itemgetter(1))
+    print 'sorted dists', dists
     return (dists[:topXUsers] if len(dists) < topXUsers else dists)
 
 
@@ -533,7 +582,7 @@ def eDist(w1, w2):
             count += float(square(w1[tag]))
         tagsSeen.add(tag)
     for tag in w2:
-        if tag not in tagSeen:
+        if tag not in tagsSeen:
             if tag in w1:
                 count += float(square(w2[tag] - w1[tag]))
             else:
@@ -566,8 +615,8 @@ def calculate(name):#calculate weight toward image tags
                 count = count + int(l['count'])
         for d in dislikes:
             if d['idnumber'] == tag:
-                totalSeen = totalSeen + int(l['count'])
-                count = count - int(l['count'])
+                totalSeen = totalSeen + int(d['count'])
+                count = count - int(d['count'])
         tagWeights[str(tag)] = float(count/totalSeen)
     return tagWeights
     
