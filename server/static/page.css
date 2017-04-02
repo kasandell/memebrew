@@ -3,7 +3,8 @@ body {
   font-family: 'Trebuchet MS', sans-serif;
   font-size: 14px;
   width: 700px;
-  margin: 30px auto; }
+  margin: 30px auto;
+  color: white; }
 
 a {
   color: #26776F; }
