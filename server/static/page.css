@@ -8,9 +8,8 @@ body {
 
 a {
   color: #26776F; }
-
-a:hover {
-  color: #333; }
+  a:hover {
+    color: #333; }
 
 input[type="text"],
 input[type="password"] {

@@ -10,18 +10,14 @@
 <body>
   <h1>Memes N' Stuff</h1>
   <div class="navigation">
-  {% if g.user %}
     <a href="{{ url_for('hot') }}">hot</a> |
     <a href="{{ url_for('trending') }}">trending</a> |
     <a href="{{ url_for('fresh') }}">fresh</a> |
+  {% if g.user %}
     <a href="{{ url_for('recommended') }}">recommended</a> |
     <a href="{{ url_for('upload') }}">upload</a> |
     <a href="{{ url_for('logout') }}">sign out [{{ g.user.username }}]</a> |
-
   {% else %}
-    <a href="{{ url_for('hot') }}">hot</a> |
-    <a href="{{ url_for('trending') }}">trending</a> |
-    <a href="{{ url_for('fresh') }}">fresh</a> |
     <a href="{{ url_for('register') }}">sign up</a> |
     <a href="{{ url_for('login') }}">sign in</a>
   {% endif %}

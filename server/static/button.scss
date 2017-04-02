@@ -1,0 +1,25 @@
+@import 'variables.scss';
+
+.btn {
+    /* reset default styles */
+    color: white;
+    background-color: $dark-green;
+    border: 0px;
+    border-radius: 5px;
+    padding: 0.5em 0.75em 0.5em 0.75em;
+    font-size: 1em;
+    &:hover {
+        cursor: pointer;
+    }
+
+    /* this makes it "move" when you click it */
+    position: relative;
+    top: -2px;
+    left: -2px;
+    box-shadow: 2px 2px 0px 0 $green;
+    &:active {
+        box-shadow: none;
+        top: 0px;
+        left: 0px;
+    }
+}

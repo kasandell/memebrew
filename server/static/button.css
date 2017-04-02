@@ -1,0 +1,21 @@
+.btn {
+  /* reset default styles */
+  color: white;
+  background-color: #24776F;
+  border: 0px;
+  border-radius: 5px;
+  padding: 0.5em 0.75em 0.5em 0.75em;
+  font-size: 1em;
+  /* this makes it "move" when you click it */
+  position: relative;
+  top: -2px;
+  left: -2px;
+  box-shadow: 2px 2px 0px 0 #6ECCC4; }
+  .btn:hover {
+    cursor: pointer; }
+  .btn:active {
+    box-shadow: none;
+    top: 0px;
+    left: 0px; }
+
+/*# sourceMappingURL=button.css.map */
