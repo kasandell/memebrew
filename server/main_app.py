@@ -64,6 +64,13 @@ app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.config['UPLOADS_FOLDER'] = UPLOADS_FOLDER
 
+# add all the stylesheets to the templates
+@app.context_processor
+def inject_stylesheets():
+    # maybe find a less acoustic way to do this, if you want
+    files = ['messages.css', 'navigation.css', 'page.css', 'variables.css']
+    return dict(stylesheets=files)
+
 #return the database
 def get_db():
     top = _app_ctx_stack.top

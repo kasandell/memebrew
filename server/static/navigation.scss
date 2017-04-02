@@ -1,0 +1,20 @@
+.navigation {
+    background: #DEE9E8;
+    padding: 4px 10px;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #eee;
+    color: #888;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+
+    h2 {
+        margin: 0 0 15px 0;
+        color: #105751;
+        text-shadow: 0 1px 2px #ccc;
+    }
+
+    a {
+        color: #444;
+        font-weight: bold;
+    }
+}

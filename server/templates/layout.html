@@ -1,9 +1,14 @@
 <!doctype html>
-<title>{% block title %}Welcome{% endblock %} | Memes N' Stuff</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
-<div class="page">
-    <h1>Memes N' Stuff</h1>
+<head>
+  <title>{% block title %}Welcome{% endblock %} | Memes N' Stuff</title>
+  {% for stylesheet in stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=stylesheet) }}">
+  {% endfor %}
+</head>
+
+<body>
+  <h1>Memes N' Stuff</h1>
   <div class="navigation">
   {% if g.user %}
     <a href="{{ url_for('hot') }}">hot</a> |
@@ -25,7 +30,7 @@
     {% if flashes %}
       <ul class="flashes">
       {% for message in flashes %}
-        <li>{{ message }}
+        <li>{{ message }}</li>
       {% endfor %}
       </ul>
     {% endif %}
@@ -33,4 +38,4 @@
   <div class="body">
   {% block body %}{% endblock %}
   </div>
-</div>
+</body>
