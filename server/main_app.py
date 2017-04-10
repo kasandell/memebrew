@@ -177,15 +177,14 @@ def base_page():
 @app.route('/hot', methods = ['GET'])
 def hot():
     session['page_title'] = 'hot'
-    #after = request.args.get('after')
-    #if after is None:
-    #    return render_template('meme_pages.html')
-
+    after = request.args.get('after')
+    if after is None:
+        msg = query_db('select caption, image, image_url from Uploads ul order by (select score from imagescores where image=ul.image) desc')
+        return render_template('meme_pages.html', messages = msg)
+    msg = query_db('select caption, image, image_url from Uploads ul order by (select score from imagescores where image=ul.image) desc')
     #load the most popular current images
     #msg = query_db('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ?) order by uploadtime desc', [hotFloor])
-    msg = query_db('select caption, image, image_url from Uploads ul order by (select score from imagescores where image=ul.image) desc')
-    print msg
-    return render_template('meme_pages.html', messages = msg) 
+    #return render_template('meme_pages.html', messages = msg) 
 
 
 #api endpoint for hot, used by app
@@ -403,6 +402,9 @@ def getTags(tagStr):
 #upload images
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload():
+    if not g.user:
+        flash('You need to be signed in to upload')
+        return redirect(url_for('hot'))
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
@@ -456,7 +458,7 @@ def secs_since_epoch(date):
 def score(upvotes, downvotes):
     return upvotes-downvotes
 
-#calculate an image score, used for selecting into hot/trending
+    #calculate an image score, used for selecting into hot/trending
 def get_score(img):
     print 'image:', img
     ups_q = query_db('select * from likes where image=?', [img])
