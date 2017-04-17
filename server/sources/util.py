@@ -1,13 +1,17 @@
 from database import Database
-from image import image
+#from image import image
+import image
 from binaryTags import binaryTags
 from flask import session
-
+from config import config
 dislikesTable = 'dislikes'
 likesTable = 'likes'
+baseImageDir = 'http://127.0.0.1:5000/img'
 
 
-def utils:
+class utils(object):
+    UPLOADS_FOLDER = '/Users/kylesandell/Desktop/Developer/MachineLearningMemes/server/storage/'
+    ALLOWED_EXTENSIONS = ['gif', 'png', 'jpeg', 'jpg']
     @staticmethod
     def returnMessage(success, reason=None):
         if reason is None:
@@ -16,7 +20,7 @@ def utils:
                 })
         else:
             return jsonify({
-                'success': success
+                'success': success,
                 'reason': reason
                 })
     @staticmethod 
@@ -71,3 +75,27 @@ def utils:
         else:
             Database.execute('insert into taglikes(userid, idnumber, count) select ?,?,?', [ userID, tag, 1])
 
+
+
+    @staticmethod
+    def extractTags(tagStr):
+        tgArr = tagStr.split(',')
+        tgArr = [f.strip() for f in tgArr]
+        tgArr = [str(f).lower() for f in tgArr if (f is not '' and f is not None)]
+        return tgArr
+
+    @staticmethod
+    def createLink(permID):
+       print config.get('baseImageDir')
+       return config.get('baseImageDir') + '/' + permID 
+    
+    @staticmethod
+    def getImageType(imgName):
+        if imgName[-4:].lower() == '.jpg' or imgName[-4:].lower() == '.png' or imgName[-4:].lower() == '.gif':
+            return imgName[-4:].lower()
+        if imgName[-5:].lower() == '.jpeg':
+            return imgName[-5:].lower()
+
+    @staticmethod
+    def allowedFile(filename):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in utils.ALLOWED_EXTENSIONS

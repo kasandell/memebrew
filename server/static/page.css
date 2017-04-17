@@ -56,13 +56,15 @@ h2 {
 .flashes {
   list-style: none;
   margin: 10px 10px 0 10px;
-  padding: 0; }
+  padding: 0;
+  background: #E7DFDD; }
   .flashes li {
-    background: #4717F6;
+    background: #E7DFDD;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
     padding: 4px;
-    font-size: 13px; }
+    font-size: 13px;
+    color: black; }
 
 .error {
   margin: 10px 0;
@@ -71,6 +73,7 @@ h2 {
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
   padding: 4px;
-  font-size: 13px; }
+  font-size: 13px;
+  color: black; }
 
 /*# sourceMappingURL=page.css.map */

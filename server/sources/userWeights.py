@@ -1,14 +1,14 @@
-from Databse import database
+from database import Database
 
 
-class userWeights:
+class userWeights(object):
     def __init__(self):
         self.tagWeights = {}
 
     def __init__(self, userID):
-        self.tagWeights = calculateTagWeights( str(userID) )
+        self.tagWeights = self.calculateTagWeights( str(userID) )
 
-    def calucluateTagWeights(self, userID):
+    def calculateTagWeights(self, userID):
         likes = Database.query('select idnumber, count from taglikes where userid=?', [ userID ])
         dislikes = Database.query('select idnumber, count from tagdislikes where userid=?', [ userID ])
         tags = set()
@@ -30,7 +30,7 @@ class userWeights:
             for d in dislikes:
                 if d['idnumber'] == tag:
                     totalSeen = totalSeen + int( d['count'] )
-                    count = count - int (d'[count'] )
+                    count = count - int (d['count'] )
             
             self.tagWeights[ tag ] = float( count/totalSeen )
 
