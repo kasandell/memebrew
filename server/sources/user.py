@@ -13,26 +13,25 @@ class user(object):
 
     def updateLikesAndDislikes(self, image, primaryTable):
         if session['userid'] != self.userID:
-            return returnMessage(False, 'User liking image must be the user who is logged in')
-        if not validateTableName(primaryTable):
-            return returnMessage(False, 'Unable to find requested table')
+            return utils.returnMessage(False, 'User liking image must be the user who is logged in')
+        if not utils.validateTableName(primaryTable):
+            return utils.returnMessage(False, 'Unable to find requested table')
         secondaryTable = config.get('likeTable') if primaryTable is config.get('dislikeTable') else config.get('dislikeTable')
-        if not checkIfImagePresent(image, primaryTable):
-            return returnMessage(False, 'Cannot execute duplicate action on image')#can't like/dislike twice
-        seenImageBefore = checkIfImagePresent(image, secondaryTable)#we'll need self for tags later
-        deleteFromTable(image, secondaryTable, userID)
-        insertIntoTable(image, primaryTable, userID)
+        if utils.checkIfImagePresent(image, primaryTable):
+            return utils.returnMessage(False, 'Cannot execute duplicate action on image')#can't like/dislike twice
+        seenImageBefore = utils.checkIfImagePresent(image, secondaryTable)#we'll need self for tags later
+        utils.deleteFromTable(image, secondaryTable, self.userID)
+        utils.insertIntoTable(image, primaryTable, self.userID)
         #given new likes/dislikes rescore the image
         image.setScore()
         for tag in image.getTags():
-            if primaryTable == likeTable:
-                likeTag(userID, tag)
+            if primaryTable == config.get('likeTable'):
+                utils.likeTag(self.userID, tag)
             else:
-                dislikeTag(userID, tag)
-        return returnMessage(True)
+                dislikeTag(self.userID, tag)
+        return utils.returnMessage(True)
 
     def likeImage(self, image):
-        print config.get('likeTable')
         return self.updateLikesAndDislikes(image, config.get('likeTable') )
 
     def dislikeImage(self, image):

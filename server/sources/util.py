@@ -2,10 +2,8 @@ from database import Database
 #from image import image
 import image
 from binaryTags import binaryTags
-from flask import session
+from flask import session, jsonify
 from config import config
-dislikesTable = 'dislikes'
-likesTable = 'likes'
 baseImageDir = 'http://127.0.0.1:5000/img'
 
 
@@ -38,29 +36,33 @@ class utils(object):
 
     @staticmethod
     def deleteFromTable(image, table, userID):
-        Database.execute('delete from ? where userid=? and image=?', [ table, userID, image ])
+        qString = 'delete from ' + table + ' where userid=? and image=?'
+        Database.execute(qString, [ userID, image.permID ])
 
     @staticmethod
     def insertIntoTable(image, table, userID):
-        Database.execute('insert into ?(userid, image) select ?,?' [ table, userID, image] )
+        qString = 'insert into ' + table + '(userid, image) select ?,?'
+        Database.execute(qString, [ userID, image.permID] )
 
     @staticmethod
     def validateTableName(tableName):
-        return True if tableName is likesTable or tableName is dislikesTable else False
+        return True if (tableName == config.get('likeTable') or tableName == config.get('dislikeTable') ) else False
 
     @staticmethod
     def checkQueryExistence(query, args=()):
-        res = Database.execute(query, args)
+        res = Database.query(query, args)
+        ret = True if (res is not None) else False
         return True if res is not None else False
 
     @staticmethod
     def checkIfImagePresent(image, tableName):
-        return checkQueryExistence('select 1 from ? where userid=? and iamge=?', [ tableName, session['userid'], image.permID ])
+        qString = 'select * from ' + tableName + ' where userid=? and image=?'
+        return utils.checkQueryExistence(qString, [ str(session['userid']), str(image.permID) ])
 
 
     @staticmethod
     def dislikeTag(tag, userID):
-        if checkQueryExistence('select 1 from tagdislikes where userid=? and idnumber=?', [ userID, tag]):
+        if utils.checkQueryExistence('select 1 from tagdislikes where userid=? and idnumber=?', [ userID, tag]):
             Database.execute('update tagdislikes set count=count+1 where userid=? and idnumber=?' [ userID, tag ])
             Database.execute('update taglikes set count=count-1 where userid=? and idnumber=?' [ userID, tag ])
         else:
@@ -69,7 +71,7 @@ class utils(object):
         
     @staticmethod
     def likeTag(tag, userID):
-        if checkQueryExistence('select 1 from taglikes where userid=? and idnumber=?', [ userID, tag]):
+        if utils.checkQueryExistence('select 1 from taglikes where userid=? and idnumber=?', [ userID, tag]):
             Database.execute('update taglikes set count=count+1 where userid=? and idnumber=?' [ userID, tag ])
             Database.execute('update tagdislikes set count=count-1 where userid=? and idnumber=?' [ userID, tag ])
         else:
@@ -86,7 +88,6 @@ class utils(object):
 
     @staticmethod
     def createLink(permID):
-       print config.get('baseImageDir')
        return config.get('baseImageDir') + '/' + permID 
     
     @staticmethod

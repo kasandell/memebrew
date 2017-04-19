@@ -290,7 +290,8 @@ if we've liked/disliked the image before, update the opposite table to represent
 def like_image(perm_id):
     print 'like'
     u = user( session[ 'userid' ])
-    u.likeImage(perm_id)
+    i = image(perm_id)
+    u.likeImage(i)
     return jsonify({'success':True})
     
 
@@ -300,7 +301,8 @@ def like_image(perm_id):
 def dislike_image(perm_id):
     print 'dislike'
     u = user( session[ 'userid' ])
-    u.dislikeImage(perm_id)
+    i = image(perm_id)
+    u.dislikeImage(i)
     return jsonify({'success':True})
 
 
@@ -322,7 +324,7 @@ def upload():
             flash('No selected file')
             return redirect(url_for('upload'))
         if fl and utils.allowedFile(fl.filename):
-            img = image(request)
+            img = image(request, 'rq')
             return redirect(url_for('fresh'))
 
     return render_template('upload.html')

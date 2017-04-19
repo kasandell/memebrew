@@ -9,17 +9,28 @@ import os
 from flask import send_file, request, session
 
 class image(object):
-    def __init__(self, permID):
-        self.permID = str(permID)
+    def __init__(self, arg):
+        try:
+            test = arg.form #will fail here
+            self.createImage(arg)
+        except AttributeError as e:
+            self.weights = {}
+            self.tags = None
+            self.caption = None
+            self.imageURL = None
+            self.totalLikes = None
+            self.totalDislikes = None
+            self.score = None
+            self.permID = str(arg)
+            self.updateTotalLikes()
+            self.updateTotalDislikes()
+            self.updateScore()
+            self.loadTags()
+            self.loadImageWeights()
 
-        self.updateTotalLikes()
-        self.updateTotalDislikes()
-        self.updateScore()
-        self.loadTags()
-        self.loadImageWeights()
 
     #we use this init only when first time image is created, so we upload it to database
-    def __init__(self, request):
+    def createImage(self, request):
 
         fl = request.files['file']
        
@@ -53,6 +64,7 @@ class image(object):
     def loadImageWeights(self):
         weightQuery = Database.query('select idnumber from imagetags where image=?', [ self.permID ])
         for w in weightQuery:
+            print w
             self.weights[ w['idnumber'] ] = 1
             
 
@@ -69,7 +81,7 @@ class image(object):
 
 
     def getTotalDislikes(self):
-        dislikes = Database.query('select * from likes where image=?' [ self.permID ])
+        dislikes = Database.query('select * from likes where image=?', [ self.permID ])
         return utils.queryLength(dislikes)
 
     def updateTotalDislikes(self):
