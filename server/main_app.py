@@ -326,7 +326,7 @@ def upload():
             flash('No selected file')
             return redirect(url_for('upload'))
         if fl and utils.allowedFile(fl.filename):
-            img = image(request, 'rq')
+            img = image(request)
             return redirect(url_for('fresh'))
 
     return render_template('upload.html')
