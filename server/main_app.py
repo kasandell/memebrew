@@ -230,7 +230,8 @@ def recommended():
     session['page_title'] = 'recommended'
     rc = recommender( session['userid'] )
     recs = rc.getRecommendations()
-    return render_template('meme_pages.html', messages = recs)
+    r = [ f.jsonify() for f in recs]
+    return render_template('meme_pages.html', messages = r)
 
 
 #api recommended, used by app
@@ -239,7 +240,8 @@ def api_recommended():
     session['page_title'] = 'recommended'
     rc = recommender( session['userid'] )
     recs = rc.getRecommendations()
-    return render_template('meme_pages.html', messages = recs)
+    r = [ f.jsonify() for f in recs]
+    return render_template('meme_pages.html', messages = r)
 
 
 

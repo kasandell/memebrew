@@ -2,6 +2,7 @@ from database import Database
 from user import user
 from image import image
 from operator import itemgetter
+from util import utils
 
 
 class recommender(object):
@@ -14,10 +15,17 @@ class recommender(object):
         self.numRecommendations = 10
 
     def getRecommendations(self):
+        print 'recommend'
+
         pastLikes = self.__getPastImages()
+        print pastLikes 
         similarLikers = self.__getLikersFromImages(pastLikes)
+        print similarLikers
         mostPromisingUsers = self.__getMostPromisingUsers(similarLikers)
+        print mostPromisingUsers
         recommendedImages = self.__getImagesFromUsers(mostPromisingUsers)
+        print 'recs', recommendedImages
+        print 'recs:', [f.permID for f in recommendedImages]
         return (recommendedImages[:self.numRecommendations] if len(recommendedImages) > self.numRecommendations else recommendedImages)
 
 
@@ -29,16 +37,19 @@ class recommender(object):
     def __getLikersFromImages(self, images):
         uSet = set()
         for image in images:
+            print image, self.userID
             uNames = Database.query('select userid from likes where (image=? and NOT userid=?) limit ?', [ image, self.userID, self.lastXUsers ])
-            #unique users only
+            print uNames
+            print [f['userid'] for f in uNames]
             [uSet.add( str(f['userid']) ) for f in uNames]
         uNameList = [f for f in uSet] 
+        print uNameList
         return [user(f) for f in uNameList] # returns us a list of users
 
     def __getMostPromisingUsers(self, users):
         dists = []
         for u in users:
-            dists.append(u, distance(u))
+            dists.append( (u, self.__distance(u)) )
         dists = sorted(dists, key = itemgetter(1))
         dists = [f[0] for f in dists]
         return (dists[:self.topXUsers] if len(dists) < self.topXUsers else dists)
@@ -49,12 +60,12 @@ class recommender(object):
         count = 0
         tagsSeen = set()
         for tag in self.user.getTagWeights():
-            count += float( square( self.user.getWeightForTag(tag) - u.getWeightForTag(tag) ) )
+            count += float( utils.square( self.user.getWeightForTag(tag) - u.getWeightForTag(tag) ) )
             tagsSeen.add(tag)
 
         for tag in u.getTagWeights():
             if tag not in tagsSeen:
-                count += float( square( self.user.getWeightForTag(tag) - u.getWeightForTag(tag) ) )
+                count += float( utils.square( self.user.getWeightForTag(tag) - u.getWeightForTag(tag) ) )
         return count
 
     def __getImagesFromUsers(self, userList):
@@ -63,12 +74,12 @@ class recommender(object):
         userSet = set()
         [userSet.add(f['image']) for f in userLikes]
         for user in userList:
-            otherLikesQuery = Database.query('select imagr from likes where userid=?', [ user ])
+            otherLikesQuery = Database.query('select image from likes where userid=?', [ user.userID ])
             otherLikes = [f['image'] for f in otherLikesQuery]
             difLikes = [x for x in otherLikes if x not in userSet]
             [unlikedImages.add(f) for f in difLikes]
 
         unlikedImages = [image(f) for f in unlikedImages]
-        imageWeights = [(f, distance(f) ) for f in unlikedImages]
+        imageWeights = [(f, self.__distance(f) ) for f in unlikedImages]
         imageWeights = sorted(imageWeights, key=itemgetter(1))
         return [ f[0] for f in imageWeights ]

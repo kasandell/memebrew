@@ -11,7 +11,9 @@ from flask import send_file, request, session
 class image(object):
     def __init__(self, arg):
         try:
-            test = arg.form #will fail here
+            print 'made it'
+            test = arg.form['tags'] #will fail here
+            print 'no'
             self.createImage(arg)
         except AttributeError as e:
             self.weights = {}
@@ -27,8 +29,12 @@ class image(object):
             self.updateScore()
             self.loadTags()
             self.loadImageWeights()
+            self.getInfo()
 
-
+    def getInfo(self):
+        q = Database.query('select caption, image_url from uploads where image=?', [ self.permID ], one=True)
+        self.imageURL = str(q['image_url'])
+        self.caption = str(q['caption'])
     #we use this init only when first time image is created, so we upload it to database
     def createImage(self, request):
 
@@ -92,10 +98,12 @@ class image(object):
 
     def getScore(self):
         sc = Database.query('select * from imagescores where image=?', [ self.permID ], one=True)
+        print 'score: ', sc
         return sc if sc is not None else None
 
     def updateScore(self):
         self.score = self.getScore()
+        print 'self score: ', self.score
 
     def setScore(self):
         val = scoreImage.score(self.permID)
@@ -118,12 +126,14 @@ class image(object):
 
 
     def getTagWeights(self):
-        return getTags(self)
+        return self.getTags()
 
     def getTagWeight(self, tag):
-        return getTag(self, tag)
+        return self.getTag( tag)
 
     def getWeightForTag(self, tag):
-        return getTag(self, tag)
+        return self.getTag(tag)
 
+    def jsonify(self):
+        return {'caption':self.caption, 'image':self.permID, 'image_url':self.imageURL}
 

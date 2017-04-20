@@ -37,11 +37,13 @@ class utils(object):
     @staticmethod
     def deleteFromTable(image, table, userID):
         qString = 'delete from ' + table + ' where userid=? and image=?'
+        print qString, userID, image.permID
         Database.execute(qString, [ userID, image.permID ])
 
     @staticmethod
     def insertIntoTable(image, table, userID):
         qString = 'insert into ' + table + '(userid, image) select ?,?'
+        print qString, userID, image.permID
         Database.execute(qString, [ userID, image.permID] )
 
     @staticmethod
@@ -50,21 +52,27 @@ class utils(object):
 
     @staticmethod
     def checkQueryExistence(query, args=()):
+        print 'query', query, 'args', args
         res = Database.query(query, args)
-        ret = True if (res is not None) else False
-        return True if res is not None else False
+        print 'res', res
+        ret = True if (res is not None and res != []) else False
+        print 'ret', ret
+        return ret
 
     @staticmethod
     def checkIfImagePresent(image, tableName):
         qString = 'select * from ' + tableName + ' where userid=? and image=?'
-        return utils.checkQueryExistence(qString, [ str(session['userid']), str(image.permID) ])
+        print qString
+        val = utils.checkQueryExistence(qString, [ str(session['userid']), str(image.permID) ]) 
+        print 'val: ', val
+        return val
 
 
     @staticmethod
     def dislikeTag(tag, userID):
         if utils.checkQueryExistence('select 1 from tagdislikes where userid=? and idnumber=?', [ userID, tag]):
-            Database.execute('update tagdislikes set count=count+1 where userid=? and idnumber=?' [ userID, tag ])
-            Database.execute('update taglikes set count=count-1 where userid=? and idnumber=?' [ userID, tag ])
+            Database.execute('update tagdislikes set count=count+1 where userid=? and idnumber=?', [ userID, tag ])
+            Database.execute('update taglikes set count=count-1 where userid=? and idnumber=?', [ userID, tag ])
         else:
             Database.execute('insert into tagdislikes(userid, idnumber, count) select ?,?,?', [ userID, tag, 1])
 
@@ -72,8 +80,8 @@ class utils(object):
     @staticmethod
     def likeTag(tag, userID):
         if utils.checkQueryExistence('select 1 from taglikes where userid=? and idnumber=?', [ userID, tag]):
-            Database.execute('update taglikes set count=count+1 where userid=? and idnumber=?' [ userID, tag ])
-            Database.execute('update tagdislikes set count=count-1 where userid=? and idnumber=?' [ userID, tag ])
+            Database.execute('update taglikes set count=count+1 where userid=? and idnumber=?', [ userID, tag ])
+            Database.execute('update tagdislikes set count=count-1 where userid=? and idnumber=?', [ userID, tag ])
         else:
             Database.execute('insert into taglikes(userid, idnumber, count) select ?,?,?', [ userID, tag, 1])
 
