@@ -1,0 +1,9 @@
+@import 'variables.scss';
+
+.page { 
+    background: $background;
+    width: 800px;
+    margin: 30px auto;
+    overflow: scroll;
+}
+

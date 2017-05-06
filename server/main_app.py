@@ -44,19 +44,6 @@ from sources.config import config
 from sources.page import page
 
 
-'''
-lastXImages = 20
-lastXUsers = 20
-topXUsers = 10
-
-
-
-freshFloor = 0
-freshCeil = 10
-trendingFloor = freshCeil
-trendingCeil = 18
-hotFloor = trendingCeil
-'''
 
 
 app = Flask(__name__)
@@ -112,12 +99,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-#get a user's unique id, given their username
-def get_user_id(uname):
-    user = Database.query('select userid from Users where username=?', [uname], one=True)
-    return user[0] if user else None
-
-
 
 #register a new user
 @app.route('/register', methods = ['GET', 'POST'])
@@ -154,17 +135,6 @@ def base_page():
 #hot page
 @app.route('/hot', methods = ['GET'])
 def hot():
-    '''
-    print config.get('databaseLocation')
-    session['page_title'] = 'hot'
-    after = request.args.get('after')
-    if after is None:
-        msg = Database.query('select caption, image, image_url from Uploads ul order by (select score from imagescores where image=ul.image) desc')
-        return render_template('meme_pages.html', messages = msg)
-
-    score = Database.query('select score from imagescores where image=?', [after], one=True)['score']
-    msg = Database.query('select caption, image, image_url from uploads ul where (select score from imagescores where image=ul.image) < ? order by (select score from imagescores where image=ul.image) desc limit ?', [score, config.get('PER_PAGE')])
-    '''
     session['page_title'] = 'hot'
     p = page(request)
     msg = p.getPage()
@@ -175,20 +145,10 @@ def hot():
 @app.route('/api/hot', methods = ['GET'])
 def api_hot():
     session['page_title'] = 'hot'
-    '''
-    after = request.args.get('after')
-    if after is None:
-        msg = Database.query('select caption, image, image_url from Uploads ul order by (select score from imagescores where image=ul.image) desc')
-        return render_template('meme_pages.html', messages = msg)
-
-    score = Database.query('select score from imagescores where image=?', [after], one=True)['score']
-    return jsonify([{'image_url':f['image_url'], 'caption':f['caption'], 'score': get_score(f['image'])} for f in msg])
-    '''
     p = page(request)
     return p.getJSON()
 
-
-
+'''
 
 #trending page
 #TODO: rewrite to be images with most upvotes/time frame 
@@ -196,14 +156,9 @@ def api_hot():
 @app.route('/trending', methods = ['GET'])
 def trending():
     session['page_title'] = 'trending'
-    '''
-    msg = Database.query('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [trendingFloor, trendingCeil])
-    return render_template('meme_pages.html', messages = msg) 
-    '''
     p = page(request)
     msg = p.getPage()
     return render_template('meme_pages.html', messages = msg) 
-
 
 
 
@@ -213,15 +168,9 @@ def trending():
 @app.route('/api/trending', methods = ['GET'])
 def api_trending():
     session['page_title'] = 'trending'
-    '''
-    msg = Databse.query('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [trendingFloor, trendingCeil])
-    return jsonify([{'image_url':f['image_url'], 'caption':f['caption'], 'score': get_score(f['image'])} for f in msg])
-    '''
 
     p = page(request)
     return p.getJSON()
-
-
 
 
 #recommended page
@@ -242,7 +191,7 @@ def api_recommended():
     recs = rc.getRecommendations()
     r = [ f.jsonify() for f in recs]
     return render_template('meme_pages.html', messages = r)
-
+'''
 
 
 
@@ -250,11 +199,6 @@ def api_recommended():
 @app.route('/fresh', methods = ['GET'])
 def fresh():
     session['page_title'] = 'fresh'
-    '''
-    msg = Database.query('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [freshFloor, freshCeil])
-    for m in msg:
-        print str(m['image_url'])
-    '''
     p = page(request)
     msg = p.getPage()
     return render_template('meme_pages.html', messages = msg) 
@@ -265,13 +209,8 @@ def fresh():
 @app.route('/api/fresh', methods = ['GET'])
 def api_fresh():
     session['page_title'] = 'fresh'
-    '''
-    msg = Database.query('select caption, image, image_url from Uploads ul where ( (select score from imagescores where image=ul.image limit 1) > ? and (select score from imagescores where image=ul.image limit 1) < ?) order by uploadtime desc', [freshFloor, freshCeil])
-    return jsonify([{'image_url':f['image_url'], 'caption':f['caption']} for f in msg])
-    '''
     p = page(request)
     return p.getJSON()
-
 
 
 
@@ -317,6 +256,7 @@ def upload():
     if not g.user:
         flash('You need to be signed in to upload')
         return redirect(url_for('hot'))
+
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part')
@@ -349,6 +289,10 @@ def retImg(perm_id):
         return send_file( (app.config['UPLOADS_FOLDER'] + '/' + perm_id), mimetype=mt)
 
     return send_file( (app.config['UPLOADS_FOLDER'] + '/fnf.jpg'), mimetype='image/jpeg')
+
+
+
+
 
 if __name__ == "__main__":
     app.run()

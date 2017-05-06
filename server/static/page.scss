@@ -1,93 +1,35 @@
-@import 'variables.scss';
 
-body {
-    background: $void;
-    font-family: 'Trebuchet MS', sans-serif;
-    font-size: 14px;
-    width: 700px;
-    margin: 30px auto;
-    color: white;
-}
 
-a {
-    color: #26776F;
-
-    &:hover {
-        color: #333;
-    }
-}
-
-input[type="text"],
-input[type="password"] {
+.page { 
     background: white;
-    border: 1px solid #BFE6E2;
-    padding: 2px;
-    font-family: 'Trebuchet MS', sans-serif;
-    font-size: 14px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    color: #105751;
-}
-
-input[type="submit"] {
-    background: #105751;
-    border: 1px solid #073B36;
-    padding: 1px 3px;
-    font-family: 'Trebuchet MS', sans-serif;
-    font-size: 14px;
-    font-weight: bold;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    color: white;
-}
-
-h1 {
-    background: $jewel;
-    margin: 0;
-    padding: 10px 14px;
-    color: white;
-    letter-spacing: 1px;
-    font-weight: normal;
-}
-h2 {
-    color: white;
-
+    width: 800px;
+    margin: 30px auto;
+    overflow: scroll;
 }
 
 
-.body {
-    padding: 10px;
-}
 
-.footer {
-    background: #eee;
-    color: #888;
-    padding: 5px 10px;
-    font-size: 12px;
-}
-
-.flashes {
+.messages {
     list-style: none;
-    margin: 10px 10px 0 10px;
-    padding: 0;
-    background: $stark;
-    li {
-        background: $stark;
-        -moz-border-radius: 2px;
-        -webkit-border-radius: 2px;
-        padding: 4px;
-        font-size: 13px;
-        color: black;
-    }
+    background: gray;
 }
 
-.error {
-    margin: 10px 0;
-    background: #FAE4E4;
-    border: 1px solid #DD6F6F;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    padding: 4px;
-    font-size: 13px;
-    color: black;
+.memebox {
+    padding: 0px 0px;
+
+}
+
+
+.like {
+    display: inline-block;
+    width: 50%; 
+    margin: 0 auto;
+
+}
+
+.dislike {
+    display: inline-block;
+    width: 49%;
+    margin: 0 auto;
+
 }

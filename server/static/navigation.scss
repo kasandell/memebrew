@@ -1,20 +1,46 @@
-@import 'variables.scss';
+
 
 .navigation {
-    background: $stark;
-    padding: 4px 10px;
-    color: #888;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-
-    h2 {
-        margin: 0 0 15px 0;
-        color: #105751;
-        text-shadow: 0 1px 2px #ccc;
-    }
-
-    a {
-        color: #444;
-        font-weight: bold;
-    }
+    position: fixed;
+    width: 100%;
+    top: 80px;
+    background: gray;
 }
+
+.hotTab {
+    display: inline-block;
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.hotTab a {
+    text-decoration: none;
+    color: black;
+}
+
+.hotTab:focus {
+    background: purple;
+    color: black;
+}
+
+
+
+.freshTab {
+    display: inline-block;
+    width: 49%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.freshTab a {
+    text-decoration: none;
+    color: black;
+}
+
+.freshTab:focus {
+    background: purple;
+    color: black;
+}
+
+

@@ -24,12 +24,14 @@ class image(object):
             self.totalDislikes = None
             self.score = None
             self.permID = str(arg)
+            self.image = self.permID;
             self.updateTotalLikes()
             self.updateTotalDislikes()
             self.updateScore()
             self.loadTags()
             self.loadImageWeights()
             self.getInfo()
+            self.image_url = self.imageURL
 
     def getInfo(self):
         q = Database.query('select caption, image_url from uploads where image=?', [ self.permID ], one=True)

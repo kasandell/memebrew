@@ -1,0 +1,41 @@
+
+
+.topbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: gray;
+    min-height: 80px;
+    overflow: hidden;
+}
+
+.topbar h1 {
+    display: inline-block;
+    width: 33%;
+    text-align: center;
+
+}
+
+
+.left {
+    min-width: 33%;
+    margin: 0 auto;
+    display: inline-block;
+
+}
+
+.left button {
+    display: block;
+    width: 20%;
+    margin: 0 auto;
+    
+
+}
+
+
+.usermenu {
+    display: inline-block;
+    width: 33%;
+    margin: 0 auto;
+
+}

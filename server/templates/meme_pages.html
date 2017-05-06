@@ -5,27 +5,26 @@
     <script>
         function likePost(image)
         {
-            console.log(image);
-            console.log('hi');
             url = image + "/like";
             $.post(url);
         }
         function dislikePost(image)
         {
-            console.log('hi');
             url = image + "/dislike";
             $.post(url);
         }
     </script>
-    <h2>{{session.page_title}}</h2>
-    {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+    {% if error %}
+    <div class="error">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
     <ul class="messages">
     {% for message in messages %}
-        <li><div>
-            <h1>{{message.caption}}</h1>
+        <li><div class = "memebox">
             <img src="{{message.image_url}}">
-            <button class="btn like-btn" onclick="likePost('{{message.image}}')">Like</button>
-            <button class="btn dislike-btn" onclick="dislikePost('{{message.image}}')">Dislike</button>
+            <button class="like" onclick="likePost('{{message.image}}')">Like</button>
+            <button class="dislike" onclick="dislikePost('{{message.image}}')">Dislike</button>
         </div></li>
     {%endfor %}
     </ul>

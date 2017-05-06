@@ -1,7 +1,16 @@
-CREATE TABLE sqlite_sequence(name,seq)
-CREATE TABLE imagetags(image STRING, idnumber INTEGER)
-CREATE TABLE likes(userid STRING, image STRING, time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)
-CREATE TABLE dislikes(userid STRING, image STRING, time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)
-CREATE TABLE taglikes(userid string, idnumber integer, count integer)
-CREATE TABLE tagdislikes(userid string, idnumber integer, count integer)
-CREATE TABLE uploads (image STRING PRIMARY KEY, image_url string not null default '', caption STRING not null default 'caption this',uploadtime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, userid STRING not null)
+CREATE TABLE Users (
+userid STRING PRIMARY KEY,
+username STRING,
+passhash STRING
+);
+CREATE TABLE ImageScores(image STRING PRIMARY KEY, score FLOAT)
+CREATE TABLE tagmaps(
+idnumber INTEGER primary key autoincrement,
+tagname string
+);
+CREATE TABLE imagetags(image STRING, idnumber INTEGER);
+CREATE TABLE likes(userid STRING, image STRING, time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE dislikes(userid STRING, image STRING, time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE taglikes(userid string, idnumber integer, count integer);
+CREATE TABLE tagdislikes(userid string, idnumber integer, count integer);
+CREATE TABLE uploads (image STRING PRIMARY KEY, image_url string not null default '', caption STRING not null default 'caption this',uploadtime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, userid STRING not null);
