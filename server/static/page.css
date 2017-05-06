@@ -1,24 +1,24 @@
 .page {
   background: white;
-  width: 800px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 14px;
+  width: 700px;
   margin: 30px auto;
-  overflow: scroll; }
+  color: black; }
 
 .messages {
   list-style: none;
-  background: gray; }
-
-.memebox {
-  padding: 0px 0px; }
-
-.like {
-  display: inline-block;
-  width: 50%;
-  margin: 0 auto; }
-
-.dislike {
-  display: inline-block;
-  width: 49%;
-  margin: 0 auto; }
+  margin: 0;
+  padding: 0; }
+  .messages li div {
+    margin: 10px 0px;
+    padding: 5px;
+    text-align: center;
+    background: #F0FAF9;
+    border: 1px solid #DBF3F1;
+    border-radius: 5px;
+    min-height: 48px; }
+  .messages li img {
+    width: 100%; }
 
 /*# sourceMappingURL=page.css.map */
