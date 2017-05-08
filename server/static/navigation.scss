@@ -1,27 +1,33 @@
-
-
+@import 'variables.scss';
 .navigation {
     position: fixed;
     width: 100%;
-    top: 80px;
-    background: gray;
+    top: 60px;
+    left: 0px;
+    background: $background;
+    height: 30px;
+    padding: 0;
 }
 
 .hotTab {
     display: inline-block;
     width: 50%;
+    height: 100%;
     margin: 0 auto;
     text-align: center;
+    border-right: 1px solid $seance;
 }
 
 .hotTab a {
+    color: $purple05;
     text-decoration: none;
-    color: black;
+    display: block;
+    height: 100%;
+    width: 100%;
 }
 
 .hotTab:focus {
-    background: purple;
-    color: black;
+    background: $seance;
 }
 
 
@@ -29,18 +35,19 @@
 .freshTab {
     display: inline-block;
     width: 49%;
+    height: 100%;
     margin: 0 auto;
     text-align: center;
 }
 
 .freshTab a {
+    color: $purple05;
     text-decoration: none;
-    color: black;
+    display: block;
+    height: 100%;
+    width: 100%;
 }
 
 .freshTab:focus {
-    background: purple;
-    color: black;
+    background: $seance;
 }
-
-

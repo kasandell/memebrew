@@ -1,35 +1,45 @@
 .navigation {
   position: fixed;
   width: 100%;
-  top: 80px;
-  background: gray; }
+  top: 60px;
+  left: 0px;
+  background: #212121;
+  height: 30px;
+  padding: 0; }
 
 .hotTab {
   display: inline-block;
   width: 50%;
+  height: 100%;
   margin: 0 auto;
-  text-align: center; }
+  text-align: center;
+  border-right: 1px solid #9A12B3; }
 
 .hotTab a {
+  color: #F3E5F5;
   text-decoration: none;
-  color: black; }
+  display: block;
+  height: 100%;
+  width: 100%; }
 
 .hotTab:focus {
-  background: purple;
-  color: black; }
+  background: #9A12B3; }
 
 .freshTab {
   display: inline-block;
   width: 49%;
+  height: 100%;
   margin: 0 auto;
   text-align: center; }
 
 .freshTab a {
+  color: #F3E5F5;
   text-decoration: none;
-  color: black; }
+  display: block;
+  height: 100%;
+  width: 100%; }
 
 .freshTab:focus {
-  background: purple;
-  color: black; }
+  background: #9A12B3; }
 
 /*# sourceMappingURL=navigation.css.map */

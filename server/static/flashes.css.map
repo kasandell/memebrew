@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEA,UAAW;EACP,UAAU,EAAE,IAAI;EAChB,MAAM,EAAE,MAAM;EACd,OAAO,EAAE,CAAC;;AAGd,aAAc;EACV,UAAU,ECSH,OAAO;EDRd,MAAM,EAAE,iBAAiB;EACzB,kBAAkB,EAAE,GAAG;EACvB,qBAAqB,EAAE,GAAG;EAC1B,KAAK,ECZA,OAAO;EDaZ,OAAO,EAAE,GAAG;EACZ,SAAS,EAAE,IAAI",
+"sources": ["flashes.scss","variables.scss"],
+"names": [],
+"file": "flashes.css"
+}

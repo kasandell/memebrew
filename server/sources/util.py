@@ -89,7 +89,7 @@ class utils(object):
 
     @staticmethod
     def extractTags(tagStr):
-        tgArr = tagStr.split(',')
+        tgArr = tagStr.split('#')
         tgArr = [f.strip() for f in tgArr]
         tgArr = [str(f).lower() for f in tgArr if (f is not '' and f is not None)]
         return tgArr

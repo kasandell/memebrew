@@ -1,12 +1,14 @@
 .topbar {
   position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
-  background: gray;
-  min-height: 80px;
+  background: #212121;
+  height: 60px;
   overflow: hidden; }
 
 .topbar h1 {
+  color: #9A12B3;
   display: inline-block;
   width: 33%;
   text-align: center; }
@@ -16,14 +18,33 @@
   margin: 0 auto;
   display: inline-block; }
 
+.left button:hover {
+  cursor: pointer; }
+
 .left button {
+  border: none;
+  color: #F3E5F5;
   display: block;
   width: 20%;
-  margin: 0 auto; }
+  margin: 0 auto;
+  position: relative;
+  top: 40%;
+  background: #212121; }
 
-.usermenu {
-  display: inline-block;
+.useraction {
   width: 33%;
-  margin: 0 auto; }
+  margin: 0 auto;
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  line-height: 100%; }
+
+.useraction a {
+  text-decoration: none;
+  background: #212121;
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
+  color: #F3E5F5; }
 
 /*# sourceMappingURL=topbar.css.map */

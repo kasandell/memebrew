@@ -55,6 +55,8 @@ app.config['UPLOADS_FOLDER'] = config.get('uploadsFolder')
 
 #web interface
 stylesheets = [f for f in os.listdir("static") if f.endswith('.css')]
+stylesheets1 = [f for f in os.listdir("static/font-awesome-4.7.0/css") if f.endswith('.css')]
+print "stylesheets1", stylesheets1
 
 # add all the stylesheets to the templates
 @app.context_processor

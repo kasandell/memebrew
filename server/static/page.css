@@ -1,24 +1,53 @@
+body {
+  background: #424242; }
+
 .page {
-  background: white;
+  padding: 0px 20%;
+  background: #424242;
   font-family: 'Trebuchet MS', sans-serif;
   font-size: 14px;
-  width: 700px;
-  margin: 30px auto;
+  width: 33%;
+  margin: 30px;
   color: black; }
 
 .messages {
   list-style: none;
-  margin: 0;
-  padding: 0; }
-  .messages li div {
-    margin: 10px 0px;
-    padding: 5px;
-    text-align: center;
-    background: #F0FAF9;
-    border: 1px solid #DBF3F1;
-    border-radius: 5px;
-    min-height: 48px; }
-  .messages li img {
-    width: 100%; }
+  margin: 0px;
+  padding: 0px; }
+  .messages li {
+    color: #F3E5F5; }
+    .messages li div {
+      background: #616161;
+      margin: 10px 0px;
+      padding: 10px;
+      border-bottom: 1px solid gray;
+      min-height: 48px; }
+    .messages li img {
+      width: 100%; }
+
+.like-button, .dislike-button {
+  border: none;
+  height: 40px;
+  width: 20%;
+  display: inline-block;
+  margin: 0 auto;
+  background: #616161; }
+
+.like-button i, .dislike-button i {
+  color: gray; }
+
+.like-button:hover, .dislike-button:hover {
+  cursor: pointer; }
+
+.next-button {
+  background: #9A12B3;
+  border: none;
+  padding: 1px 3px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  color: #F3E5F5; }
 
 /*# sourceMappingURL=page.css.map */

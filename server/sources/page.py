@@ -28,11 +28,20 @@ class page(object):
     def generateHot(self):
         after = self.request.args.get('after')
         if after is None:
-            msg = Database.query('''select image from Uploads ul 
-                    where (select score from imagescores where image=ul.image) > ? 
-                    order by (select score from imagescores where image=ul.image) desc 
-                    limit ?''', 
-                    [ config.get('hotFloor'), config.get('perPage') ] )
+            msg = None
+            if g.user:
+                msg = Database.query('''select image from Uploads ul 
+                        where (select score from imagescores where image=ul.image) > ? 
+                        and not (select 1 from likes where userid=? and image=ul.image) 
+                        order by (select score from imagescores where image=ul.image) desc 
+                        limit ?''', 
+                        [ config.get('hotFloor'), session['userid'], config.get('perPage') ] )
+            else:
+                msg = Database.query('''select image from Uploads ul 
+                        where (select score from imagescores where image=ul.image) > ? 
+                        order by (select score from imagescores where image=ul.image) desc 
+                        limit ?''', 
+                        [ config.get('hotFloor'), config.get('perPage') ] )
 
             hot = [ image(f['image']) for f in msg ]
             print 'hot: ', hot
@@ -46,16 +55,28 @@ class page(object):
             print 'final: ', ret
 
             return ret
+
+        print "we found an after parameter, and it is", after
                 
         score = Database.query('select score from imagescores where image=?',
                 [after], one=True)['score']
 
-        msg = Database.query('''select image from uploads ul 
-                where (select score from imagescores where image=ul.image) < ? 
-                and (select score from imagescores where image=ul.image) > ? 
-                order by (select score from imagescores where image=ul.image) desc 
-                limit ?''', 
-                [ score, config.get('hotFloor'), config.get('perPage')] )
+        msg = None
+        if g.user:
+            msg = Database.query('''select image from uploads ul 
+                        where (select score from imagescores where image=ul.image) < ? 
+                        and (select score from imagescores where image=ul.image) > ? 
+                        and not (select 1 from likes where userid=? and image=ul.image)
+                        order by (select score from imagescores where image=ul.image) desc 
+                        limit ?''', 
+                        [ score, config.get('hotFloor'), session['userid'], config.get('perPage')] )
+        else:
+            msg = Database.query('''select image from uploads ul 
+                        where (select score from imagescores where image=ul.image) < ? 
+                        and (select score from imagescores where image=ul.image) > ? 
+                        order by (select score from imagescores where image=ul.image) desc 
+                        limit ?''', 
+                        [ score, config.get('hotFloor'), config.get('perPage')] )
 
         hot = [ image(f['image']) for f in msg ]
         print 'hot: ', hot
@@ -80,40 +101,26 @@ class page(object):
         l = [image(f) for f in l]
         return l
         
-    def generateTrending(self):
-        after = self.request.args.get('after')
-        if after is None:
-            msg = Database.query('''select caption, image, image_url from Uploads ul 
-                    where (select score from imagescores where image=ul.image) < ? 
-                    and (select score from imagescores where image=ul.image) > ? 
-                    order by (select score from imagescores where image=ul.image) 
-                    limit ?''', 
-                    [ config.get('trendingCeil'), config.get('trendingFloor'), config.get('perPage') ] )
-            return msg
-        
-
-        score = Database.query('select score from imagescores where image=?',
-                [after], one=True)['score']
-
-        msg = Database.query('''select caption, image, image_url from uploads ul
-                    where (select score from imagescores where image=ul.image) < ?
-                    and (select score from imagescores where image=ul.image) > ?
-                    and (select score from imagescores where image=ul.image) < ?
-                    order by (select score from imagescores where image=ul.image)
-                    limit ?''',
-                    [ config.get('trendingCeil'), config.get('trendingFloor'), score, config.get('perPage') ] )
-        
-        return msg
 
     #TODO: for fresh, consider ordering based solely on upload date
     def generateFresh(self):
         after = self.request.args.get('after')
         if after is None:
-            msg = Database.query('''select image from uploads ul
-                        where (select score from imagescores where image=ul.image) < ?
-                        order by (select score from imagescores where image=ul.image)
-                        limit ?''',
-                        [ config.get('freshCeil'), config.get('perPage') ] )
+            msg = None
+            if g.user:
+                msg = Database.query('''select image from uploads ul
+                            where (select score from imagescores where image=ul.image) < ?
+                            and not (select 1 from likes where userid=? and image=ul.image)
+                            order by (select score from imagescores where image=ul.image)
+                            limit ?''',
+                            [ config.get('freshCeil'), session['userid'], config.get('perPage') ] )
+            else:
+                msg = Database.query('''select image from uploads ul
+                            where (select score from imagescores where image=ul.image) < ?
+                            order by (select score from imagescores where image=ul.image)
+                            limit ?''',
+                            [ config.get('freshCeil'), config.get('perPage') ] )
+
             l = [image(f['image']) for f in msg]
             return l
 
@@ -121,10 +128,23 @@ class page(object):
         score = Database.query('select score from imagescores where image=?',
                 [after], one=True)['score']
 
-        msg = Database.query('''select caption, image, image_url from uploads ul
-        where (select score from imagescores where image=ul.image) < ?
-        and (select score from imagescores where image=ul.image) < ?
-        order by (select score from imagescores where image=ul.image)
-        limit ?''',
-        [ config.get('freshCeil'), score, config.get('perPage') ] )
+        if g.user:
+            msg = Database.query('''select caption, image, image_url from uploads ul
+                        where (select score from imagescores where image=ul.image) < ?
+                        and (select score from imagescores where image=ul.image) < ?
+                        and not (select 1 from likes where userid=? and image=ul.image)
+                        order by (select score from imagescores where image=ul.image)
+                        limit ?''',
+                        [ config.get('freshCeil'), score, session['userid'], config.get('perPage') ] )
+        else:
+            msg = Database.query('''select caption, image, image_url from uploads ul
+                        where (select score from imagescores where image=ul.image) < ?
+                        and (select score from imagescores where image=ul.image) < ?
+                        order by (select score from imagescores where image=ul.image)
+                        limit ?''',
+                        [ config.get('freshCeil'), score, config.get('perPage') ] )
+
+
+
+        l = [image(f['image']) for f in msg]
         return msg

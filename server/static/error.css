@@ -1,0 +1,10 @@
+div.error {
+  margin: 10px 0;
+  background: #D50000;
+  border: 1px solid #212121;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  padding: 4px;
+  font-size: 13px; }
+
+/*# sourceMappingURL=error.css.map */

@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,OAAQ;EACJ,MAAM,EAAE,IAAI;EACZ,KAAK,EAAE,IAAI;EACX,IAAI,EAAE,GAAG;EACT,OAAO,EAAE,GAAG",
+"sources": ["spacer.scss"],
+"names": [],
+"file": "spacer.css"
+}

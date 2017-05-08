@@ -1,48 +1,43 @@
 <!doctype html>
 
 <head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>{% block title %}Welcome{% endblock %} | Memes N' Stuff</title>
     {% for stylesheet in stylesheets %}
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename=stylesheet) }}">
     {% endfor %}
+    {% for stylesheet in stylesheets1 %}
+        <link rel="stylesheet" type="text/css" href="{{url_for('static/font-awesome-4.7.0/css', filename=stylesheet) }}">
+    {% endfor%}
 </head>
+
+
 <body>
+    <div class = "spacer"></div>
     <div class = "topbar">
         <div class = "left">
-            <button onclick="location.href='{{ url_for('upload')}}'">upload</button>
+            <button onclick="location.href='{{ url_for('upload')}}'"><i class="fa fa-plus fa-3x" aria-hidden="true"></i></button>
         </div>
         <h1>Memes N' Stuff</h1> 
         {% if g.user %}
-            <div class = "usermenu">
-                <button class = "dropbtn">{{g.user.username}}</button>
-                <div class="dropdown-content">
-                    <a href="{{ url_for('logout') }}">sign out</a>
-                </div>
+            <div class = "useraction">
+                <a href="{{ url_for('logout') }}"><i class="fa fa-sign-out fa-3x" aria-hidden="true"></i></a>
             </div>
         {% else %}
-            <div class = "loginbutton">
-                <a href="{{ url_for('login') }}">Log in/Register</a>
+            <div class = "useraction">
+                <a href="{{ url_for('login') }}"><i class="fa fa-sign-in fa-3x" aria-hidden="true"></i></a>
             </div>
         {% endif %}
     </div>
     <div class = "navigation">
         <div class = "hotTab" tabindex="1">
-            <a href="{{ url_for('hot') }}">hot</a> 
+            <a href="{{ url_for('hot') }}" class ="fill-div">Hot</a> 
         </div>
         <div class = "freshTab" tabindex="2">
-            <a href="{{ url_for('fresh') }}">fresh</a>
+            <a href="{{ url_for('fresh') }}" class = "fill-div">Fresh</a>
         </div>
     </div>
-</div>
-    {% with flashes = get_flashed_messages() %}
-    {% if flashes %}
-        <ul class="flashes">
-        {% for message in flashes %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
+    </div>
     <div class="page">
     {% block body %}{% endblock %}
     </div>

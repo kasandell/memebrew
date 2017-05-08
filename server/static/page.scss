@@ -1,33 +1,72 @@
+@import 'variables.scss';
+
+body {
+    background: $black8;
+
+}
+
 .page {
-    background: white;
+    padding: 0px 20%;
+    background: $black8;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
-    width: 700px;
-    margin: 30px auto;
+    width: 33%;//700
+    margin: 30px;//auto;
     color: black;
 }
 
 
 .messages {
     list-style: none;
-    margin: 0;
-    padding: 0;
+    margin: 0px;
+    padding: 0px;
 
     li {
+        color: $purple05;
         div {
+            background: $grey8;
             margin: 10px 0px;
-            padding: 5px;
-            text-align: center;
-            background: #F0FAF9;
-            border: 1px solid #DBF3F1;
-            border-radius: 5px;
+            padding: 10px;
+            border-bottom: 1px solid gray;
             min-height: 48px;
         }
 
         img {
             width: 100%;
         }
+
     }
 }
 
 
+.like-button, .dislike-button {
+    border: none;
+    height: 40px;
+    width: 20%;
+    display: inline-block;
+    margin: 0 auto;
+    background: $grey8;
+}
+
+.like-button i, .dislike-button i {
+    color: gray;
+}
+
+
+.like-button:hover, .dislike-button:hover {
+    cursor:pointer;
+}
+
+
+
+.next-button {
+    background: $seance;
+    border: none;
+    padding: 1px 3px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    color: $purple05;
+}

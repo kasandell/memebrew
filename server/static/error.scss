@@ -1,0 +1,11 @@
+@import 'variables.scss';
+div.error {
+    margin: 10px 0;
+    background: $redA7;
+    border: 1px solid $deepBlack;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    padding: 4px;
+    font-size: 13px;
+
+}

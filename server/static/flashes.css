@@ -1,0 +1,15 @@
+ul.flashes {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0; }
+
+ul.flashes li {
+  background: #F3E5F5;
+  border: 1px solid #seance;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  color: #424242;
+  padding: 4px;
+  font-size: 13px; }
+
+/*# sourceMappingURL=flashes.css.map */

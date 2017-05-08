@@ -1,0 +1,42 @@
+@import 'variables.scss';
+
+input[type="text"],
+input[type="password"] {
+    background: $purple05;
+    border: 1px solid $grey8;
+    padding: 2px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 14px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    color: black;
+    display: inline;
+}
+
+
+input[type="submit"] {
+    background: $seance;
+    border: none;
+    padding: 1px 3px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    color: $purple05;
+    display: inline;
+}
+
+p {
+    color: black;
+
+}
+a {
+    text-decoration: none;
+    color: $purple5;
+
+}
+h3 {
+    color: $purple5;
+
+}

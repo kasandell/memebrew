@@ -5,13 +5,32 @@
     <script>
         function likePost(image)
         {
+            var seance = "#9A12B3"
+            document.getElementById( (image + "lba")).style.color = seance;
+            document.getElementById( (image + "dba")).style.color = "gray";
             url = image + "/like";
             $.post(url);
         }
         function dislikePost(image)
         {
+            var seance = "#9A12B3"
+            document.getElementById( (image + "dba")).style.color = seance;
+            document.getElementById( (image + "lba")).style.color = "gray";
             url = image + "/dislike";
             $.post(url);
+        }
+        function requestNextPage()
+        {
+            var page = document.getElementsByClassName("memebox");
+            var id = $(".memebox").last();
+            console.log(id);
+            id = id.attr('id');
+            if(id){
+                url = "{{session.page_title}}" + "?after=" + id;
+                console.log(url);
+                window.location.href = url;
+            }
+
         }
     </script>
     {% if error %}
@@ -19,13 +38,24 @@
         <strong>Error:</strong> {{ error }}
     </div>
     {% endif %}
+    {% with flashes = get_flashed_messages() %}
+    {% if flashes %}
+        <ul class="flashes">
+        {% for message in flashes %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
     <ul class="messages">
     {% for message in messages %}
-        <li><div class = "memebox">
+        <li><div class = "memebox" id="{{message.image}}">
+            <h2>{{message.caption}}</h2>
             <img src="{{message.image_url}}">
-            <button class="like" onclick="likePost('{{message.image}}')">Like</button>
-            <button class="dislike" onclick="dislikePost('{{message.image}}')">Dislike</button>
+            <button class="like-button" id="{{message.image}}lb" onclick="likePost('{{message.image}}')"><i class="fa fa-arrow-up fa-3x" id="{{message.image}}lba"></i></button>
+            <button class="dislike-button" id="{{message.image}}db" onclick="dislikePost('{{message.image}}')"><i class="fa fa-arrow-down fa-3x" id="{{message.image}}dba" ></i></button>
         </div></li>
     {%endfor %}
     </ul>
+    <button class="next-button" onclick="requestNextPage()">Next</button>
 {% endblock %}

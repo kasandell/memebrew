@@ -1,0 +1,35 @@
+input[type="text"],
+input[type="password"] {
+  background: #F3E5F5;
+  border: 1px solid #616161;
+  padding: 2px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 14px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  color: black;
+  display: inline; }
+
+input[type="submit"] {
+  background: #9A12B3;
+  border: none;
+  padding: 1px 3px;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  color: #F3E5F5;
+  display: inline; }
+
+p {
+  color: black; }
+
+a {
+  text-decoration: none;
+  color: #9C27B0; }
+
+h3 {
+  color: #9C27B0; }
+
+/*# sourceMappingURL=signin.css.map */
