@@ -35,9 +35,13 @@ class image(object):
 
     def getInfo(self):
         q = Database.query('select caption, image_url from uploads where image=?', [ self.permID ], one=True)
-        self.imageURL = str(q['image_url'])
-        self.caption = str(q['caption'])
-    #we use this init only when first time image is created, so we upload it to database
+        try:
+            self.imageURL = str(q['image_url'])
+            self.caption = str(q['caption'])
+        except Exception as e:
+            self.imageURL = None
+            self.caption = None
+        #we use this init only when first time image is created, so we upload it to database
     def createImage(self, request):
 
         fl = request.files['file']

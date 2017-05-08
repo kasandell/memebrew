@@ -47,6 +47,7 @@
    text-align: center;
    position: relative;
    line-height: 100%;
+   background: $background;
 }
 .useraction a {
     text-decoration: none;
@@ -55,6 +56,6 @@
     -moz-appearance: button;
     appearance: button;
     color: $purple05;
-
+    background: $background;
 }
 
