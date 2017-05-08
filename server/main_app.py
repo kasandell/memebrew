@@ -55,8 +55,7 @@ app.config['UPLOADS_FOLDER'] = config.get('uploadsFolder')
 
 #web interface
 stylesheets = [f for f in os.listdir("static") if f.endswith('.css')]
-stylesheets1 = [f for f in os.listdir("static/font-awesome-4.7.0/css") if f.endswith('.css')]
-print "stylesheets1", stylesheets1
+FAstylesheets = [f for f in os.listdir("static/font-awesome-4.7.0/css") if f.endswith('.css')]
 
 # add all the stylesheets to the templates
 @app.context_processor
@@ -101,6 +100,9 @@ def logout():
     return redirect(url_for('login'))
 
 
+def get_user_id(uname):
+    user = Database.query('select userid from Users where username=?', [uname], one=True)
+    return user[0] if user else None
 
 #register a new user
 @app.route('/register', methods = ['GET', 'POST'])
