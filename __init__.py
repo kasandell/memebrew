@@ -48,7 +48,6 @@ from sources.page import page
 
 app = Flask(__name__)
 
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.config['UPLOADS_FOLDER'] = config.get('uploadsFolder') 
 
 

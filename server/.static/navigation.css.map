@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAOA,OAAQ;EACJ,OAAO,EAAE,MAAM;;AAInB,SAAU;EACN,OAAO,EAAE,MAAM",
-"sources": ["navigation.scss"],
-"names": [],
-"file": "navigation.css"
-}
