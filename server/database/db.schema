@@ -3,7 +3,7 @@ userid STRING PRIMARY KEY,
 username STRING,
 passhash STRING
 );
-CREATE TABLE ImageScores(image STRING PRIMARY KEY, score FLOAT)
+CREATE TABLE ImageScores(image STRING PRIMARY KEY, score FLOAT);
 CREATE TABLE tagmaps(
 idnumber INTEGER primary key autoincrement,
 tagname string
