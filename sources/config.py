@@ -1,5 +1,5 @@
 class config(object):
-    fname = 'conf.cfg'
+    fname = '/var/www/memebrew/memebrew/conf.cfg'
     opts = None
     @staticmethod
     def readConfigFile( parseToken):

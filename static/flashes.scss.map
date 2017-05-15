@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACA,SAAU;EACN,UAAU,ECmBN,OAAO;EDlBX,MAAM,EAAE,iBAAoB;EAC5B,kBAAkB,EAAE,GAAG;EACvB,qBAAqB,EAAE,GAAG;EAC1B,OAAO,EAAE,GAAG;EACZ,SAAS,EAAE,IAAI",
+"sources": ["error.scss","variables.scss"],
+"names": [],
+"file": "flashes.scss"
+}

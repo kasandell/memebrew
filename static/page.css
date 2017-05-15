@@ -44,10 +44,16 @@ body {
   border: none;
   padding: 1px 3px;
   font-family: 'Trebuchet MS', sans-serif;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: bold;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
-  color: #F3E5F5; }
+  color: #F3E5F5;
+  display: inline; }
+
+.next-button i {
+  background: #9A12B3;
+  color: #F3E5F5;
+  display: inline; }
 
 /*# sourceMappingURL=page.css.map */

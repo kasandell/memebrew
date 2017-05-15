@@ -25,14 +25,14 @@
         <div class = "left">
             <button onclick="location.href='{{ url_for('upload')}}'"><i class="fa fa-plus fa-3x" aria-hidden="true"></i></button>
         </div>
-        <h1>Memes N' Stuff</h1> 
+        <h1>Memebrew</h1> 
         {% if g.user %}
             <div class = "useraction">
-                <a href="{{ url_for('logout') }}"><i class="fa fa-sign-out fa-3x" aria-hidden="true"></i></a>
+                <button onclick="location.href='{{ url_for('logout') }}'"><i class="fa fa-sign-out fa-3x" aria-hidden="true"></i></button>
             </div>
         {% else %}
             <div class = "useraction">
-                <a href="{{ url_for('login') }}"><i class="fa fa-sign-in fa-3x" aria-hidden="true"></i></a>
+                <button onclick="location.href='{{ url_for('login') }}'"><i class="fa fa-sign-out fa-3x" aria-hidden="true"></i></button>
             </div>
         {% endif %}
     </div>

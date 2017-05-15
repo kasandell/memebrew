@@ -46,15 +46,15 @@ from sources.page import page
 
 
 
-app = Flask(__name__)
 
+app = Flask(__name__)
 app.config['UPLOADS_FOLDER'] = config.get('uploadsFolder') 
 
 
 
 #web interface
-stylesheets = [f for f in os.listdir("static") if f.endswith('.css')]
-FAstylesheets = [f for f in os.listdir("static/font-awesome-4.7.0/css") if f.endswith('.css')]
+stylesheets = [f for f in os.listdir("/var/www/memebrew/memebrew/static") if f.endswith('.css')]
+FAstylesheets = [f for f in os.listdir("/var/www/memebrew/memebrew/static/font-awesome-4.7.0/css") if f.endswith('.css')]
 
 # add all the stylesheets to the templates
 @app.context_processor
@@ -138,10 +138,13 @@ def base_page():
 #hot page
 @app.route('/hot', methods = ['GET'])
 def hot():
-    session['page_title'] = 'hot'
-    p = page(request)
-    msg = p.getPage()
-    return render_template('meme_pages.html', messages = msg) 
+    try:
+        session['page_title'] = 'hot'
+        p = page(request)
+        msg = p.getPage()
+        return render_template('meme_pages.html', messages = msg) 
+    except Exception as e:
+        pass
 
 
 #api endpoint for hot, used by app

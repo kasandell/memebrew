@@ -32,19 +32,21 @@
   background: #212121; }
 
 .useraction {
-  width: 33%;
+  min-width: 33%;
   margin: 0 auto;
-  display: inline-block;
-  text-align: center;
-  position: relative;
-  line-height: 100%; }
+  display: inline-block; }
 
-.useraction a {
-  text-decoration: none;
-  background: #212121;
-  -webkit-appearance: button;
-  -moz-appearance: button;
-  appearance: button;
-  color: #F3E5F5; }
+.useraction button {
+  border: none;
+  color: #F3E5F5;
+  display: block;
+  width: 20%;
+  margin: 0 auto;
+  position: relative;
+  top: 40%;
+  background: #212121; }
+
+.useraction button:hover {
+  cursor: pointer; }
 
 /*# sourceMappingURL=topbar.css.map */
