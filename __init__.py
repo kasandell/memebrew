@@ -49,12 +49,13 @@ from sources.page import page
 
 app = Flask(__name__)
 app.config['UPLOADS_FOLDER'] = config.get('uploadsFolder') 
+app.secret_key = 'localtest'
 
 
 
 #web interface
-stylesheets = [f for f in os.listdir("/var/www/memebrew/memebrew/static") if f.endswith('.css')]
-FAstylesheets = [f for f in os.listdir("/var/www/memebrew/memebrew/static/font-awesome-4.7.0/css") if f.endswith('.css')]
+stylesheets = [f for f in os.listdir("/Users/kylesandell/Desktop/Developer/MachineLearningMemes/static") if f.endswith('.css')]
+FAstylesheets = [f for f in os.listdir("/Users/kylesandell/Desktop/Developer/MachineLearningMemes/static/font-awesome-4.7.0/css") if f.endswith('.css')]
 
 # add all the stylesheets to the templates
 @app.context_processor

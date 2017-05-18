@@ -1,5 +1,5 @@
 class config(object):
-    fname = '/var/www/memebrew/memebrew/conf.cfg'
+    fname = '/Users/kylesandell/Desktop/Developer/MachineLearningMemes/conf.cfg'
     opts = None
     @staticmethod
     def readConfigFile( parseToken):
