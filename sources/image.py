@@ -105,7 +105,7 @@ class image(object):
     def getScore(self):
         sc = Database.query('select * from imagescores where image=?', [ self.permID ], one=True)
         print 'score: ', sc
-        return sc if sc is not None else None
+        return sc['score'] if sc is not None else None
 
     def updateScore(self):
         self.score = self.getScore()

@@ -16,6 +16,93 @@
     {% for stylesheet in FAstylesheets %}
         <link rel="stylesheet" type="text/css" href="{{url_for('static/font-awesome-4.7.0/css', filename=stylesheet) }}">
     {% endfor%}
+    <link href="https://fonts.googleapis.com/css?family=Play" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        var queue = []
+        function getPostID()
+        {
+            var i = document.getElementsByClassName("memebox")[0];
+            return  i.id;
+
+        }
+        function likePost()
+        {
+            var seance = "#9A12B3"
+            document.getElementById( "lba").style.color = seance;
+            document.getElementById( "dba").style.color = "gray";
+            image = getPostID()
+            url = image + "/like";
+            nextImage();
+            $.post(url);
+            
+        }
+        function dislikePost()
+        {
+            var seance = "#9A12B3"
+            document.getElementById("dba").style.color = seance;
+            document.getElementById("lba").style.color = "gray";
+            image = getPostID()
+            url = image + "/dislike";
+            nextImage();
+            $.post(url);
+        }
+        function nextImage()
+        {
+            var ni = queue.shift();
+            console.log(ni.caption);
+            console.log(ni.image_url);
+            console.log(ni.image);
+
+            var capt = document.getElementById("caption");
+            capt.innerHTML = ni.caption;
+
+            var ig = document.getElementById("image");
+            ig.src = ni.image_url;
+
+            var mb = document.getElementsByClassName("memebox")[0];
+            mb.id = ni.image;
+        }
+
+        function requestNextImageBatch()
+        {
+            var page = document.getElementsByClassName("memebox");
+            var id = $(".memebox")[0].id;
+            url = "";
+            if(id != ""){
+                console.log("THEFUCK");
+                url = "api/{{session.page_title}}" + "?after=" + id;
+            }
+            else {
+                url = "api/{{session.page_title}}";
+            }
+            console.log(url);
+            $.get(url, function(data) { 
+                console.log('UM HELLO');
+                console.log(data);
+                arr = data;//JSON.parse(data);
+                for(i = 0; i < arr.length; i++)
+                {
+                    console.log("arr sub");
+                    console.log(arr[i]);
+                    queue.push( arr[i] );
+
+                }
+                console.log(queue);
+            });
+            console.log('end requestnew');
+            console.log(queue);
+        }
+
+        window.onload = function() {
+            requestNextImageBatch();
+            nextImage();
+        }
+    </script>
+
+
+
 </head>
 
 

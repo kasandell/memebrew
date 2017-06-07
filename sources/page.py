@@ -1,4 +1,4 @@
-from flask import request, session, g
+from flask import request, session, g, jsonify
 from config import config
 from database import Database
 from recommender import recommender
@@ -23,7 +23,8 @@ class page(object):
     
     def getJSON(self):
         msg = self.__getPage()
-        return jsonify([{'image_url':f.imageURL, 'caption':f.caption, 'score': f.score} for f in msg])
+        print [{'image_url':f.imageURL, 'caption':f.caption, 'score': f.score, 'image':f.permID} for f in msg]
+        return jsonify([{'image_url':f.imageURL, 'caption':f.caption, 'score': f.score, 'image':f.permID} for f in msg])
 
     def generateHot(self):
         after = self.request.args.get('after')

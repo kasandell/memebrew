@@ -1,38 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}{{session.page_title}}{% endblock %}
 {% block body %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script>
-        function likePost(image)
-        {
-            var seance = "#9A12B3"
-            document.getElementById( (image + "lba")).style.color = seance;
-            document.getElementById( (image + "dba")).style.color = "gray";
-            url = image + "/like";
-            $.post(url);
-        }
-        function dislikePost(image)
-        {
-            var seance = "#9A12B3"
-            document.getElementById( (image + "dba")).style.color = seance;
-            document.getElementById( (image + "lba")).style.color = "gray";
-            url = image + "/dislike";
-            $.post(url);
-        }
-        function requestNextPage()
-        {
-            var page = document.getElementsByClassName("memebox");
-            var id = $(".memebox").last();
-            console.log(id);
-            id = id.attr('id');
-            if(id){
-                url = "{{session.page_title}}" + "?after=" + id;
-                console.log(url);
-                window.location.href = url;
-            }
-
-        }
-    </script>
     {% if error %}
     <div class="error">
         <strong>Error:</strong> {{ error }}
@@ -47,16 +15,10 @@
         </ul>
     {% endif %}
     {% endwith %}
-    <ul class="messages">
-    {% for message in messages %}
-        <li><div class = "memebox" id="{{message.image}}">
-            <h2>{{message.caption}}</h2>
-            <img src="{{message.image_url}}">
-            <button class="like-button" id="{{message.image}}lb" onclick="likePost('{{message.image}}')"><i class="fa fa-arrow-up fa-3x" id="{{message.image}}lba"></i></button>
-            <button class="dislike-button" id="{{message.image}}db" onclick="dislikePost('{{message.image}}')"><i class="fa fa-arrow-down fa-3x" id="{{message.image}}dba" ></i></button>
-        </div></li>
-    {%endfor %}
-    </ul>
-    <button class="next-button" onclick="requestNextPage()">Next <i class="fa fa-chevron-right" aria-hidden="true"></i>
-    </button>
+    <div class = "memebox" id="">
+        <h2 id = "caption"></h2>
+        <img src="" id="image">
+        <button class="like-button" id="like-button" onclick="likePost()"><i class="fa fa-arrow-up fa-3x" id="lba"></i></button>
+        <button class="dislike-button" id="dislike-button" onclick="dislikePost()"><i class="fa fa-arrow-down fa-3x" id="dba" ></i></button>
+    </div>
 {% endblock %}
